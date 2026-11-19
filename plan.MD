@@ -13,6 +13,7 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider avan
 * [Plugins prévus](#plugins-prévus)
 * [Distribution sur les postes](#distribution-sur-les-postes)
 * [Sécurité de la chaîne de livraison](#sécurité-de-la-chaîne-de-livraison)
+* [Documentation](#documentation)
 * [Exploitation](#exploitation)
 * [Intégration continue](#intégration-continue)
 * [Phases](#phases)
@@ -54,13 +55,16 @@ capitalisationIA/
 ├── outils/
 │   ├── installer.sh                           script d'installation poste développeur
 │   └── publier.sh                             logique de publication appelée par le workflow
+├── docs/
+│   ├── mainteneur.md                          documentation du mainteneur du dépôt
+│   └── utilisateur.md                         documentation de l'utilisateur du marketplace et des plugins
 ├── tests/                                     tests bats et fixtures des scripts de hooks
 ├── .github/workflows/
 │   ├── validation.yml                         contrôles sur PR et sur main
 │   └── publication.yml                        publication stable (workflow_dispatch)
 ├── .gitattributes                             *.sh text eol=lf
 ├── CODEOWNERS
-└── README.md
+└── README.md                                  présentation courte et liens vers docs/
 ```
 
 ## Canaux stable et early access
@@ -110,7 +114,7 @@ Publication par le workflow .github/workflows/publication.yml, déclenchement ma
 3. Mise à jour de l'entrée du catalogue stable (ref et version), commit et push sur main.
 4. Résumé dans le journal du workflow (tag, commit, entrée modifiée).
 
-Le tag est poussé avant le commit du catalogue, de sorte que le catalogue ne pointe jamais vers un tag absent. L'identité utilisée par le workflow doit être autorisée à contourner la protection de main pour ce seul commit (règle de contournement dédiée ou application GitHub). La logique est portée par outils/publier.sh pour rester testable hors CI.
+Le tag est poussé avant le commit du catalogue, de sorte que le catalogue ne pointe jamais vers un tag absent. Le workflow pousse avec le jeton de l'application GitHub capitalisation-ia-publication, seule identité autorisée à contourner les rulesets (voir Sécurité de la chaîne de livraison). La logique est portée par outils/publier.sh pour rester testable hors CI.
 
 Retour arrière : relancer le workflow en mode retour arrière (entrée supplémentaire) qui repointe l'entrée stable sur un tag antérieur existant, sans créer de tag. Propagation au prochain démarrage de Claude Code sur les postes (autoUpdate).
 
@@ -167,9 +171,38 @@ Le dépôt étant public, aucun jeton n'est nécessaire pour l'installation ni p
 
 Toute fusion sur main exécute du code sur les postes early access, et toute publication sur les postes stables, sur une cinquantaine de projets.
 
-* Protection de la branche main : PR obligatoire, revue obligatoire par CODEOWNERS, validation verte requise, pas de push direct (hors identité du workflow de publication).
-* Tags protégés (création réservée au workflow de publication), signature des tags à étudier.
+* Application GitHub capitalisation-ia-publication : permission Contents en lecture et écriture uniquement, installée sur ce seul dépôt ; App ID et clé privée stockés dans l'environnement GitHub publication, restreint à la branche main.
+* Ruleset de branche protection-main sur la branche par défaut : suppression et force push interdits, PR obligatoire avec revue des CODEOWNERS, statut du job de validation.yml obligatoire ; contournement autorisé pour l'application (toujours) et pour le rôle Repository admin (PR uniquement, pour permettre au mainteneur seul de fusionner ses propres PR).
+* Le statut obligatoire de validation.yml ne peut être sélectionné dans protection-main qu'après une première exécution du workflow : il est ajouté au ruleset en fin de phase 0, une fois validation.yml fusionné et exécuté sur main.
+* Ruleset de tags tags-publication sur le motif *--v* : création, modification et suppression interdites, contournement autorisé pour la seule application ; signature des tags à étudier.
+* Aucune protection de branche classique sur main en parallèle des rulesets.
 * Revue de sécurité de tout script de hook en PR (point de la checklist de revue).
+
+La procédure détaillée de paramétrage est décrite dans docs/mainteneur.md.
+
+## Documentation
+
+Deux documentations distinctes, rédigées selon les conventions du dépôt et tenues à jour à chaque phase (une PR qui modifie un comportement visible met à jour la documentation concernée).
+
+docs/mainteneur.md, à destination d'un mainteneur de ce dépôt :
+
+* paramétrage GitHub (application de publication, environnement, rulesets, ajout du statut obligatoire de validation.yml) ;
+* organisation du dépôt et conventions (rédaction, nommage des tags, CHANGELOG par plugin, absence de version dans les plugin.json) ;
+* ajout d'un plugin, ajout ou modification des règles d'un projet, normalisation du remote ;
+* exécution locale des tests et de shellcheck, lecture des résultats de la CI ;
+* publication d'une version stable et retour arrière via le workflow publication ;
+* renommage ou retrait d'un plugin ;
+* checklist de revue de PR (sécurité des hooks, absence d'information confidentielle dans les règles projets).
+
+docs/utilisateur.md, à destination d'un utilisateur du marketplace et de ses plugins :
+
+* prérequis du poste (Git Bash, jq, version minimale de Claude Code) ;
+* installation avec installer.sh, choix et bascule de canal stable ou early access, vérification avec /plugin, désinstallation ;
+* description de chaque plugin : ce qu'il fait, quand ses hooks se déclenchent, ce qu'il écrit et où ;
+* journal des prompts : emplacement, droits, rétention, avertissement sur les secrets collés dans un prompt ;
+* coupe-circuit CAPIA_DESACTIVER ;
+* demande d'ajout ou de modification des règles de son projet ;
+* dépannage et remontée d'incident.
 
 ## Exploitation
 
@@ -193,8 +226,8 @@ GitHub Actions sur chaque PR et sur main (validation.yml) :
 
 Chaque phase est relue dans un contexte isolé et validée explicitement avant de passer à la suivante, sur la base de critères de sortie vérifiables.
 
-1. Phase 0 : fondations (arborescence, catalogues, README, .gitattributes, CI, CODEOWNERS, protection de main, workflow de publication, installer.sh) et prototype des deux canaux. Critères de sortie : sur un poste vierge, installation stable puis early access puis retour en stable réussie avec un plugin factice ; hypothèses de la section Canaux stable et early access confirmées ou plan amendé ; publication et retour arrière du plugin factice réussis via le workflow.
-2. Phase 1 : plugin socle, publication socle--v1.0.0. Critères de sortie : tests bats verts, journal écrit hors projet avec les bons droits, purge vérifiée, aucun fichier créé dans les projets fixtures.
+1. Phase 0 : fondations (arborescence, catalogues, README, .gitattributes, CI, CODEOWNERS, paramétrage GitHub, workflow de publication, installer.sh, docs/mainteneur.md) et prototype des deux canaux. Le paramétrage GitHub (application, environnement, rulesets) est réalisé ; il reste à ajouter le statut obligatoire de validation.yml dans protection-main après sa première exécution sur main. Critères de sortie : sur un poste vierge, installation stable puis early access puis retour en stable réussie avec un plugin factice ; hypothèses de la section Canaux stable et early access confirmées ou plan amendé ; publication et retour arrière du plugin factice réussis via le workflow ; statut de validation.yml obligatoire dans protection-main ; docs/mainteneur.md couvrant le paramétrage GitHub et la publication.
+2. Phase 1 : plugin socle, publication socle--v1.0.0, première version de docs/utilisateur.md (installation, canaux, socle, journal, coupe-circuit). Critères de sortie : tests bats verts, journal écrit hors projet avec les bons droits, purge vérifiée, aucun fichier créé dans les projets fixtures, installation réussie par une tierce personne en suivant uniquement docs/utilisateur.md.
 3. Phase 2 : plugin regles-projets et modèle de dossier projet. Critères de sortie : règles injectées sur un projet connu, aucun effet sur un projet inconnu ou sans remote, réinjection après compact vérifiée.
 4. Phase 3 : stack-java-spring. Critères de sortie : formatage effectif sur un projet Java fixture, sortie silencieuse sur les autres stacks, durée du hook inférieure au timeout déclaré.
 5. Phase 4 : pilote early access sur 2 à 3 projets Java. Critères de sortie : indicateurs de la section Exploitation collectés sur au moins deux semaines, incidents bloquants corrigés, décision de promotion en stable de socle, regles-projets et stack-java-spring.
@@ -204,6 +237,5 @@ Chaque phase est relue dans un contexte isolé et validée explicitement avant d
 ## Points ouverts
 
 * Accès en écriture de Claude au dépôt : installer l'application GitHub Claude sur talbotgui/capitalisationIA.
-* Identité du workflow de publication autorisée à pousser sur main protégée : règle de contournement GitHub Actions ou application GitHub dédiée.
 * Signature des tags de publication.
 * Analyse RGPD du journal des prompts selon la nature des postes.
