@@ -1,0 +1,7 @@
+# Plugin temoin
+
+Document généré avec l'assistance de l'IA (Claude).
+
+Plugin de diagnostic du marketplace capitalisationIA. Au démarrage de chaque session Claude Code, il affiche le canal (stable ou early access) et la version du plugin réellement chargés, ce qui permet de vérifier une installation ou une bascule de canal. Il signale aussi une activation simultanée dans les deux canaux, situation à proscrire car chaque hook s'exécuterait deux fois.
+
+Il n'écrit aucun fichier et ne modifie rien : il lit uniquement le chemin d'installation du plugin et le fichier settings.json de l'utilisateur.

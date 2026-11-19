@@ -43,6 +43,7 @@ capitalisationIA/
 ├── .claude-plugin/marketplace.json                       catalogue stable « capitalisation-ia »
 ├── canaux/early-access/.claude-plugin/marketplace.json   catalogue « capitalisation-ia-early »
 ├── plugins/
+│   ├── temoin/                                plugin de diagnostic (canal et version actifs)
 │   ├── socle/                                 journal des prompts, conventions git, bibliothèque commune
 │   │   └── CHANGELOG.md
 │   ├── regles-projets/                        règles par projet chargées au SessionStart
@@ -54,7 +55,8 @@ capitalisationIA/
 │   └── stack-rust/
 ├── outils/
 │   ├── installer.sh                           script d'installation poste développeur
-│   └── publier.sh                             logique de publication appelée par le workflow
+│   ├── publier.sh                             logique de publication appelée par le workflow
+│   └── verifier-coherence.sh                  contrôles de cohérence des catalogues et plugins (CI)
 ├── docs/
 │   ├── mainteneur.md                          documentation du mainteneur du dépôt
 │   └── utilisateur.md                         documentation de l'utilisateur du marketplace et des plugins
@@ -76,7 +78,7 @@ Les deux catalogues référencent les mêmes dossiers plugins/<nom> via des sour
 
 Conséquence : le champ version est absent des plugin.json (sinon il primerait sur l'entrée et figerait le canal early access). claude plugin validate émet alors un avertissement sur chaque plugin ; --strict est donc réservé à la validation des catalogues.
 
-Le catalogue stable étant à l'emplacement par défaut, /plugin marketplace add talbotgui/capitalisationIA donne le canal stable. Le catalogue early access, hors emplacement par défaut, est déclaré par le script d'installation via extraKnownMarketplaces avec le champ path.
+Le catalogue stable étant à l'emplacement par défaut, /plugin marketplace add talbotgui/capitalisationIA donne le canal stable. Le catalogue early access, hors emplacement par défaut, est déclaré par son URL brute (source url : https://raw.githubusercontent.com/talbotgui/capitalisationIA/main/canaux/early-access/.claude-plugin/marketplace.json) ; c'est possible parce que toutes ses entrées sont des sources git-subdir absolues. La déclaration via le champ path d'une source git dans extraKnownMarketplaces, envisagée initialement, n'est pas prise en compte par la CLI (prototype). La mise à jour automatique est activée par le champ autoUpdate de l'entrée extraKnownMarketplaces du marketplace.
 
 Exclusion mutuelle : un même plugin ne doit jamais être activé simultanément depuis les deux catalogues, sous peine d'exécuter chaque hook deux fois (double journalisation, double formatage). Trois protections :
 
@@ -84,7 +86,16 @@ Exclusion mutuelle : un même plugin ne doit jamais être activé simultanément
 * chaque hook vérifie qu'il est l'instance du canal actif (comparaison de CLAUDE_PLUGIN_ROOT avec le canal déclaré dans les settings) et sort en code 0 sans rien faire sinon ;
 * la bascule de canal fait l'objet d'un test automatisé.
 
-Hypothèses à valider par prototype en phase 0, avant tout autre développement : comportement de git-subdir avec un tag en ref, version calculée depuis le SHA en l'absence de version, déclaration du catalogue early access via path dans extraKnownMarketplaces, résolution des dependencies avec les tags <plugin>--v<version> et catalogue dans lequel la dépendance d'un plugin de stack vers socle est recherchée.
+Résultats du prototype de phase 0 (dépôt local, Claude Code 2.1.328, configuration isolée) :
+
+* git-subdir avec un tag en ref : confirmé, le canal stable livre le contenu du tag et affiche la version de l'entrée ;
+* version calculée en l'absence de version : confirmé, le canal early access affiche une version dérivée du commit et livre le contenu de main ;
+* activation simultanée des deux canaux : possible, ce qui confirme le besoin d'exclusion mutuelle ;
+* bascule de canal par installer.sh : confirmée (test automatisé) ;
+* déclaration du catalogue early access via path : non retenue, remplacée par la source url (voir ci-dessus) ;
+* dependencies : un nom seul est résolu dans le catalogue du plugin déclarant, donc dans le même canal ; une plage de versions exige une version dans plugin.json au commit du tag, incompatible avec le canal early access. Les dépendances sont donc déclarées par nom seul, sans plage.
+
+Reste à confirmer sur GitHub après fusion : installation depuis les sources réelles (github et url), publication et retour arrière via le workflow.
 
 ## Identification d'un projet
 
@@ -103,7 +114,7 @@ La fonction est couverte par des tests bats sur l'ensemble de ces formes.
 
 ## Versionnage et publication
 
-* Semver par plugin, tags <plugin>--v<version> (convention utilisée aussi pour résoudre les plages de versions des dependencies).
+* Semver par plugin, tags <plugin>--v<version> (convention de Claude Code). La commande claude plugin tag n'est pas utilisée car elle exige une version dans plugin.json ; les tags sont créés par outils/publier.sh.
 * Un CHANGELOG.md par plugin.
 * Version minimale de Claude Code requise documentée dans le README, vérifiée par installer.sh et épinglée dans la CI (les fonctionnalités paths des skills, dependencies et git-subdir sont récentes).
 
@@ -122,6 +133,10 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 ## Plugins prévus
 
+### temoin
+
+* Plugin de diagnostic livré en phase 0 pour le prototype, conservé ensuite : hook SessionStart (startup) qui affiche à l'utilisateur le canal et la version chargés, et signale une activation simultanée dans les deux canaux. N'écrit aucun fichier.
+
 ### socle
 
 * Hook UserPromptSubmit journaliser-prompt.sh, adapté du modèle suiviProjets : même format (horodatage ISO 8601, prompt, séparateur ---), sortie toujours en code 0. Le journal est écrit hors du projet, dans ~/.claude/capitalisation-ia/journaux/<identifiant-projet>/prompts.log (identifiant issu de la normalisation du remote), ce qui évite toute écriture dans l'arbre de travail et toute modification de .git/info/exclude. La racine projet vient de CLAUDE_PROJECT_DIR. Les sous-agents ne déclenchent pas cet événement, comme dans le modèle.
@@ -138,7 +153,7 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 ### Plugins de stack
 
-* Dépendance au plugin socle.
+* Dépendance au plugin socle, déclarée par nom seul (sans plage de versions).
 * Skills avec paths (ex. **/*.java, pom.xml, build.gradle* ; **/*.ts, angular.json ; **/*.rs, Cargo.toml).
 * Hook PostToolUse de formatage et d'analyse sur le modèle de formater-et-analyser.sh de suiviProjets, qui sort immédiatement si l'extension du fichier ou le marqueur de stack ne correspond pas.
 * Contraintes de performance du hook PostToolUse : timeout explicite déclaré dans hooks.json, traitement du seul fichier modifié, utilisation exclusive des outils déjà présents dans le projet ou sur le poste (aucune installation), sortie silencieuse si l'outil est absent.
@@ -226,7 +241,7 @@ GitHub Actions sur chaque PR et sur main (validation.yml) :
 
 Chaque phase est relue dans un contexte isolé et validée explicitement avant de passer à la suivante, sur la base de critères de sortie vérifiables.
 
-1. Phase 0 : fondations (arborescence, catalogues, README, .gitattributes, CI, CODEOWNERS, paramétrage GitHub, workflow de publication, installer.sh, docs/mainteneur.md) et prototype des deux canaux. Le paramétrage GitHub (application, environnement, rulesets) est réalisé ; il reste à ajouter le statut obligatoire de validation.yml dans protection-main après sa première exécution sur main. Critères de sortie : sur un poste vierge, installation stable puis early access puis retour en stable réussie avec un plugin factice ; hypothèses de la section Canaux stable et early access confirmées ou plan amendé ; publication et retour arrière du plugin factice réussis via le workflow ; statut de validation.yml obligatoire dans protection-main ; docs/mainteneur.md couvrant le paramétrage GitHub et la publication.
+1. Phase 0 : fondations (arborescence, catalogues, README, .gitattributes, CI, CODEOWNERS, paramétrage GitHub, workflow de publication, installer.sh, docs/mainteneur.md) et prototype des deux canaux avec le plugin de diagnostic temoin. Le paramétrage GitHub (application, environnement, rulesets) est réalisé ; il reste à ajouter le statut obligatoire de validation.yml dans protection-main après sa première exécution sur main. Critères de sortie : sur un poste vierge, installation stable puis early access puis retour en stable réussie avec le plugin temoin ; hypothèses de la section Canaux stable et early access confirmées ou plan amendé ; publication et retour arrière du plugin temoin réussis via le workflow ; statut de validation.yml obligatoire dans protection-main ; docs/mainteneur.md couvrant le paramétrage GitHub et la publication.
 2. Phase 1 : plugin socle, publication socle--v1.0.0, première version de docs/utilisateur.md (installation, canaux, socle, journal, coupe-circuit). Critères de sortie : tests bats verts, journal écrit hors projet avec les bons droits, purge vérifiée, aucun fichier créé dans les projets fixtures, installation réussie par une tierce personne en suivant uniquement docs/utilisateur.md.
 3. Phase 2 : plugin regles-projets et modèle de dossier projet. Critères de sortie : règles injectées sur un projet connu, aucun effet sur un projet inconnu ou sans remote, réinjection après compact vérifiée.
 4. Phase 3 : stack-java-spring. Critères de sortie : formatage effectif sur un projet Java fixture, sortie silencieuse sur les autres stacks, durée du hook inférieure au timeout déclaré.

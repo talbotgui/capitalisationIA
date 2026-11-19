@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "capitalisation-ia-early",
+  "description": "Canal early access du marketplace capitalisationIA : chaque fusion sur main est livrée.",
+  "owner": {
+    "name": "talbotgui",
+    "url": "https://github.com/talbotgui"
+  },
+  "plugins": [
+    {
+      "name": "temoin",
+      "description": "Plugin de diagnostic : affiche au démarrage de session le canal et la version actifs et signale une double activation des canaux.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/temoin",
+        "ref": "main"
+      }
+    }
+  ]
+}

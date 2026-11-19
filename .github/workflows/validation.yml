@@ -1,0 +1,66 @@
+# Fichier généré avec l'assistance de l'IA (Claude).
+# Contrôles du dépôt sur chaque PR et sur main ; également appelé par publication.yml.
+# Le job « validation » est le statut obligatoire du ruleset protection-main.
+
+name: validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  # Version de Claude Code utilisée en CI, à aligner sur VERSION_MIN_CLAUDE de outils/installer.sh.
+  CLAUDE_CODE_VERSION: "2.1.328"
+  DISABLE_AUTOUPDATER: "1"
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installation des outils
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q bats shellcheck jq
+          npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          claude --version
+
+      - name: Version de Claude Code alignée avec installer.sh
+        run: |
+          grep -q "^VERSION_MIN_CLAUDE=\"${CLAUDE_CODE_VERSION}\"$" outils/installer.sh \
+            || { echo "VERSION_MIN_CLAUDE de outils/installer.sh différente de ${CLAUDE_CODE_VERSION}"; exit 1; }
+
+      - name: shellcheck
+        run: git ls-files -z '*.sh' | xargs -0 shellcheck
+
+      - name: Validation des catalogues
+        run: |
+          claude plugin validate --strict canaux/early-access
+          if [ "$(jq '.plugins | length' .claude-plugin/marketplace.json)" -eq 0 ]; then
+            echo "Catalogue stable vide : validation sans --strict."
+            claude plugin validate .
+          else
+            claude plugin validate --strict .
+          fi
+
+      - name: Validation des plugins
+        run: |
+          for dossier in plugins/*/; do
+            claude plugin validate "$dossier"
+          done
+
+      - name: Cohérence du dépôt
+        run: outils/verifier-coherence.sh
+
+      - name: Tests bats
+        run: bats tests/
