@@ -9,6 +9,7 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider.
 * [Résultats du prototype](#résultats-du-prototype)
 * [Écarts par rapport au plan](#écarts-par-rapport-au-plan)
 * [Tests](#tests)
+* [Incidents](#incidents)
 * [Critères de sortie](#critères-de-sortie)
 * [Reste à faire](#reste-à-faire)
 
@@ -58,14 +59,18 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 * shellcheck sans alerte sur tous les scripts.
 * claude plugin validate : catalogue early access valide en --strict, catalogue stable valide sans --strict (vide), plugin temoin valide.
 
+## Incidents
+
+* Première publication de temoin 0.1.0 en échec (« l'arbre de travail n'est pas propre ») : dans publication.yml, tee créait resultat.txt dans le dépôt avant le contrôle de publier.sh. Correction : fichier écrit dans $RUNNER_TEMP. Aucun tag n'avait été créé.
+
 ## Critères de sortie
 
 | Critère | État |
 |---|---|
 | Installation stable, early access puis retour en stable sur un poste vierge | validé en local, à vérifier sur le poste du mainteneur |
 | Hypothèses des canaux confirmées ou plan amendé | atteint |
-| Publication et retour arrière de temoin via le workflow | à faire |
-| Statut validation obligatoire dans protection-main | à faire |
+| Publication et retour arrière de temoin via le workflow | en cours (incident corrigé, voir [Incidents](#incidents)) |
+| Statut validation obligatoire dans protection-main | fait par le mainteneur |
 | Documentation mainteneur couvrant paramétrage GitHub et publication | atteint |
 
 ## Reste à faire
