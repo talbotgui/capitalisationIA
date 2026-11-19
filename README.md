@@ -25,13 +25,13 @@ git clone https://github.com/talbotgui/capitalisationIA.git
 capitalisationIA/outils/installer.sh stable
 ```
 
-Remplacer stable par early pour le canal early access. Le détail figure dans docs/utilisateur.md.
+Remplacer stable par early pour le canal early access. Le détail figure dans la [documentation utilisateur](docs/produit/utilisateur.md).
 
 ## Documentation
 
-* [Documentation utilisateur](docs/utilisateur.md) : installation, canaux, plugins, dépannage.
-* [Documentation mainteneur](docs/mainteneur.md) : paramétrage GitHub, publication, tests, conventions.
-* [Plan de mise en place](plan.MD).
+* [Documentation utilisateur](docs/produit/utilisateur.md) : installation, canaux, plugins, dépannage.
+* [Documentation mainteneur](docs/produit/mainteneur/index.md) : paramétrage GitHub, publication, tests, conventions.
+* [Plan de démarrage](docs/projet/01_planDeDemarrage.md) et documents de projet dans [docs/projet](docs/projet/).
 
 ## Organisation du dépôt
 
@@ -40,4 +40,5 @@ Remplacer stable par early pour le canal early access. Le détail figure dans do
 * plugins/ : un dossier par plugin.
 * outils/ : installation, publication, contrôles de cohérence.
 * tests/ : tests bats.
+* docs/produit/ : documentation du produit ; docs/projet/ : plans et rapports.
 * .github/workflows/ : validation (PR et main) et publication (déclenchement manuel).

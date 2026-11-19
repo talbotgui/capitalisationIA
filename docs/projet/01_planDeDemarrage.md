@@ -57,9 +57,12 @@ capitalisationIA/
 │   ├── installer.sh                           script d'installation poste développeur
 │   ├── publier.sh                             logique de publication appelée par le workflow
 │   └── verifier-coherence.sh                  contrôles de cohérence des catalogues et plugins (CI)
+├── .claude/rules/collaboration.md             règles de collaboration avec Claude sur ce dépôt
 ├── docs/
-│   ├── mainteneur.md                          documentation du mainteneur du dépôt
-│   └── utilisateur.md                         documentation de l'utilisateur du marketplace et des plugins
+│   ├── produit/
+│   │   ├── mainteneur/                        documentation du mainteneur (accueil index.md et pages)
+│   │   └── utilisateur.md                     documentation de l'utilisateur du marketplace et des plugins
+│   └── projet/                                plans, phases et rapports
 ├── tests/                                     tests bats et fixtures des scripts de hooks
 ├── .github/workflows/
 │   ├── validation.yml                         contrôles sur PR et sur main
@@ -86,16 +89,7 @@ Exclusion mutuelle : un même plugin ne doit jamais être activé simultanément
 * chaque hook vérifie qu'il est l'instance du canal actif (comparaison de CLAUDE_PLUGIN_ROOT avec le canal déclaré dans les settings) et sort en code 0 sans rien faire sinon ;
 * la bascule de canal fait l'objet d'un test automatisé.
 
-Résultats du prototype de phase 0 (dépôt local, Claude Code 2.1.328, configuration isolée) :
-
-* git-subdir avec un tag en ref : confirmé, le canal stable livre le contenu du tag et affiche la version de l'entrée ;
-* version calculée en l'absence de version : confirmé, le canal early access affiche une version dérivée du commit et livre le contenu de main ;
-* activation simultanée des deux canaux : possible, ce qui confirme le besoin d'exclusion mutuelle ;
-* bascule de canal par installer.sh : confirmée (test automatisé) ;
-* déclaration du catalogue early access via path : non retenue, remplacée par la source url (voir ci-dessus) ;
-* dependencies : un nom seul est résolu dans le catalogue du plugin déclarant, donc dans le même canal ; une plage de versions exige une version dans plugin.json au commit du tag, incompatible avec le canal early access. Les dépendances sont donc déclarées par nom seul, sans plage.
-
-Reste à confirmer sur GitHub après fusion : installation depuis les sources réelles (github et url), publication et retour arrière via le workflow.
+Les résultats du prototype de phase 0 sont consignés dans le [rapport de la phase 0](01_rapportDeDemarrage_00_fondation.md#résultats-du-prototype).
 
 ## Identification d'un projet
 
@@ -125,7 +119,7 @@ Publication par le workflow .github/workflows/publication.yml, déclenchement ma
 3. Mise à jour de l'entrée du catalogue stable (ref et version), commit et push sur main.
 4. Résumé dans le journal du workflow (tag, commit, entrée modifiée).
 
-Le tag est poussé avant le commit du catalogue, de sorte que le catalogue ne pointe jamais vers un tag absent. Le workflow pousse avec le jeton de l'application GitHub capitalisation-ia-publication, seule identité autorisée à contourner les rulesets (voir Sécurité de la chaîne de livraison). La logique est portée par outils/publier.sh pour rester testable hors CI.
+Le tag est poussé avant le commit du catalogue, de sorte que le catalogue ne pointe jamais vers un tag absent. Le workflow pousse avec le jeton de l'application GitHub capitalisation-ia-publication, seule identité autorisée à contourner les rulesets (voir [Sécurité de la chaîne de livraison](#sécurité-de-la-chaîne-de-livraison)). La logique est portée par outils/publier.sh pour rester testable hors CI.
 
 Retour arrière : relancer le workflow en mode retour arrière (entrée supplémentaire) qui repointe l'entrée stable sur un tag antérieur existant, sans créer de tag. Propagation au prochain démarrage de Claude Code sur les postes (autoUpdate).
 
@@ -162,7 +156,7 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 ### Règles communes à tous les hooks
 
 * Coupe-circuit : la variable d'environnement CAPIA_DESACTIVER=1 (ou CAPIA_DESACTIVER=<plugin>,<plugin>) fait sortir les hooks concernés immédiatement en code 0, sans modification du dépôt projet.
-* Contrôle du canal actif (voir Canaux stable et early access).
+* Contrôle du canal actif (voir [Canaux stable et early access](#canaux-stable-et-early-access)).
 * Scripts en fins de ligne LF (.gitattributes) et bit exécutable positionné dans git.
 
 ### Coexistence avec une configuration existante
@@ -193,13 +187,13 @@ Toute fusion sur main exécute du code sur les postes early access, et toute pub
 * Aucune protection de branche classique sur main en parallèle des rulesets.
 * Revue de sécurité de tout script de hook en PR (point de la checklist de revue).
 
-La procédure détaillée de paramétrage est décrite dans docs/mainteneur.md.
+La procédure détaillée de paramétrage est décrite dans le [paramétrage GitHub du dépôt](../produit/mainteneur/parametrageGithub.md).
 
 ## Documentation
 
 Deux documentations distinctes, rédigées selon les conventions du dépôt et tenues à jour à chaque phase (une PR qui modifie un comportement visible met à jour la documentation concernée).
 
-docs/mainteneur.md, à destination d'un mainteneur de ce dépôt :
+[Documentation mainteneur](../produit/mainteneur/index.md) (répertoire docs/produit/mainteneur/, une page d'accueil et une page par thème), à destination d'un mainteneur de ce dépôt :
 
 * paramétrage GitHub (application de publication, environnement, rulesets, ajout du statut obligatoire de validation.yml) ;
 * organisation du dépôt et conventions (rédaction, nommage des tags, CHANGELOG par plugin, absence de version dans les plugin.json) ;
@@ -209,7 +203,7 @@ docs/mainteneur.md, à destination d'un mainteneur de ce dépôt :
 * renommage ou retrait d'un plugin ;
 * checklist de revue de PR (sécurité des hooks, absence d'information confidentielle dans les règles projets).
 
-docs/utilisateur.md, à destination d'un utilisateur du marketplace et de ses plugins :
+[Documentation utilisateur](../produit/utilisateur.md), à destination d'un utilisateur du marketplace et de ses plugins :
 
 * prérequis du poste (Git Bash, jq, version minimale de Claude Code) ;
 * installation avec installer.sh, choix et bascule de canal stable ou early access, vérification avec /plugin, désinstallation ;
@@ -221,7 +215,7 @@ docs/utilisateur.md, à destination d'un utilisateur du marketplace et de ses pl
 
 ## Exploitation
 
-* Retour arrière : voir Versionnage et publication.
+* Retour arrière : voir [Versionnage et publication](#versionnage-et-publication).
 * Désactivation ponctuelle : coupe-circuit CAPIA_DESACTIVER.
 * Journal des prompts : rétention 90 jours, purge automatique, analyse RGPD à mener si des postes non personnels sont concernés.
 * Mesure pour le pilote : nombre de postes et de projets équipés, incidents remontés, temps passé dans les hooks (horodatage début et fin consigné par chaque hook dans un journal technique local), retours qualitatifs des utilisateurs.
@@ -239,15 +233,17 @@ GitHub Actions sur chaque PR et sur main (validation.yml) :
 
 ## Phases
 
-Chaque phase est relue dans un contexte isolé et validée explicitement avant de passer à la suivante, sur la base de critères de sortie vérifiables.
+Chaque phase est relue dans un contexte isolé et validée explicitement avant de passer à la suivante, sur la base de critères de sortie vérifiables. Chaque phase fait l'objet d'un fichier dédié ; ses rapports sont des fichiers séparés.
 
-1. Phase 0 : fondations (arborescence, catalogues, README, .gitattributes, CI, CODEOWNERS, paramétrage GitHub, workflow de publication, installer.sh, docs/mainteneur.md) et prototype des deux canaux avec le plugin de diagnostic temoin. Le paramétrage GitHub (application, environnement, rulesets) est réalisé ; il reste à ajouter le statut obligatoire de validation.yml dans protection-main après sa première exécution sur main. Critères de sortie : sur un poste vierge, installation stable puis early access puis retour en stable réussie avec le plugin temoin ; hypothèses de la section Canaux stable et early access confirmées ou plan amendé ; publication et retour arrière du plugin temoin réussis via le workflow ; statut de validation.yml obligatoire dans protection-main ; docs/mainteneur.md couvrant le paramétrage GitHub et la publication.
-2. Phase 1 : plugin socle, publication socle--v1.0.0, première version de docs/utilisateur.md (installation, canaux, socle, journal, coupe-circuit). Critères de sortie : tests bats verts, journal écrit hors projet avec les bons droits, purge vérifiée, aucun fichier créé dans les projets fixtures, installation réussie par une tierce personne en suivant uniquement docs/utilisateur.md.
-3. Phase 2 : plugin regles-projets et modèle de dossier projet. Critères de sortie : règles injectées sur un projet connu, aucun effet sur un projet inconnu ou sans remote, réinjection après compact vérifiée.
-4. Phase 3 : stack-java-spring. Critères de sortie : formatage effectif sur un projet Java fixture, sortie silencieuse sur les autres stacks, durée du hook inférieure au timeout déclaré.
-5. Phase 4 : pilote early access sur 2 à 3 projets Java. Critères de sortie : indicateurs de la section Exploitation collectés sur au moins deux semaines, incidents bloquants corrigés, décision de promotion en stable de socle, regles-projets et stack-java-spring.
-6. Phase 5 : stack-ts-angular puis stack-rust, en intégrant les retours du pilote, chacun passant par une période early access avant promotion.
-7. Phase 6 : généralisation progressive aux autres projets en stable.
+| Phase | Plan | Rapport |
+|---|---|---|
+| 0 : fondations | [01_planDeDemarrage_00_fondation.md](01_planDeDemarrage_00_fondation.md) | [01_rapportDeDemarrage_00_fondation.md](01_rapportDeDemarrage_00_fondation.md) |
+| 1 : socle | [01_planDeDemarrage_01_socle.md](01_planDeDemarrage_01_socle.md) | à venir |
+| 2 : règles projets | [01_planDeDemarrage_02_reglesProjets.md](01_planDeDemarrage_02_reglesProjets.md) | à venir |
+| 3 : stack Java Spring | [01_planDeDemarrage_03_stackJavaSpring.md](01_planDeDemarrage_03_stackJavaSpring.md) | à venir |
+| 4 : pilote | [01_planDeDemarrage_04_pilote.md](01_planDeDemarrage_04_pilote.md) | à venir |
+| 5 : stacks Angular et Rust | [01_planDeDemarrage_05_stacksAngularRust.md](01_planDeDemarrage_05_stacksAngularRust.md) | à venir |
+| 6 : généralisation | [01_planDeDemarrage_06_generalisation.md](01_planDeDemarrage_06_generalisation.md) | à venir |
 
 ## Points ouverts
 
