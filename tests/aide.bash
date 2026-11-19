@@ -3,7 +3,7 @@
 
 RACINE_DEPOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
 
-# Crée dans $BATS_TEST_TMPDIR/depot une copie du dépôt (catalogues, plugins, outils),
+# Crée dans $BATS_TEST_TMPDIR/depot une copie du dépôt (catalogues, plugins, outils), catalogue stable vidé,
 # initialisée en dépôt git sur la branche main avec un commit, et dont les sources
 # git-subdir pointent sur ce dépôt local. Exporte DEPOT et CAPIA_DEPOT_URL.
 creer_depot_fixture() {
@@ -16,6 +16,11 @@ creer_depot_fixture() {
   local early="$DEPOT/canaux/early-access/.claude-plugin/marketplace.json" tmp
   tmp="$(mktemp)"
   jq --arg u "$CAPIA_DEPOT_URL" '.plugins |= map(.source.url = $u)' "$early" > "$tmp" && mv "$tmp" "$early"
+  # Catalogue stable vidé : les tests ne dépendent pas des versions réellement publiées
+  # (leurs tags n'existent pas dans la fixture).
+  local stable="$DEPOT/.claude-plugin/marketplace.json"
+  tmp="$(mktemp)"
+  jq '.plugins = []' "$stable" > "$tmp" && mv "$tmp" "$stable"
   git -C "$DEPOT" init -q -b main
   git -C "$DEPOT" config user.email "tests@exemple.invalid"
   git -C "$DEPOT" config user.name "tests"

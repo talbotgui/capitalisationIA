@@ -62,6 +62,7 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 ## Incidents
 
 * Première publication de temoin 0.1.0 en échec (« l'arbre de travail n'est pas propre ») : dans publication.yml, tee créait resultat.txt dans le dépôt avant le contrôle de publier.sh. Correction : fichier écrit dans $RUNNER_TEMP. Aucun tag n'avait été créé.
+* Validation en échec sur main après la publication de temoin 0.1.0 (publication elle-même réussie : tag et entrée stable en place) : la fixture des tests copiait le catalogue stable réel, dont l'entrée pointe vers un tag absent de la fixture. Correction : catalogue stable vidé dans la fixture (tests/aide.bash).
 
 ## Critères de sortie
 
@@ -69,7 +70,7 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 |---|---|
 | Installation stable, early access puis retour en stable sur un poste vierge | validé en local, à vérifier sur le poste du mainteneur |
 | Hypothèses des canaux confirmées ou plan amendé | atteint |
-| Publication et retour arrière de temoin via le workflow | en cours (incident corrigé, voir [Incidents](#incidents)) |
+| Publication et retour arrière de temoin via le workflow | publication de 0.1.0 réussie, retour arrière à faire (voir [Incidents](#incidents)) |
 | Statut validation obligatoire dans protection-main | fait par le mainteneur |
 | Documentation mainteneur couvrant paramétrage GitHub et publication | atteint |
 
