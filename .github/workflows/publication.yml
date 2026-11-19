@@ -79,11 +79,12 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -o pipefail
-          outils/publier.sh "$MODE" "$PLUGIN" "$VERSION" | tee resultat.txt
+          # Résultat écrit hors du dépôt : publier.sh exige un arbre de travail propre.
+          outils/publier.sh "$MODE" "$PLUGIN" "$VERSION" | tee "$RUNNER_TEMP/resultat.txt"
           {
             echo "## $MODE de $PLUGIN $VERSION"
             echo
             echo '```'
-            cat resultat.txt
+            cat "$RUNNER_TEMP/resultat.txt"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
