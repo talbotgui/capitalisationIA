@@ -1,0 +1,89 @@
+# Fichier généré avec l'assistance de l'IA (Claude).
+# Publication d'une version stable d'un plugin, ou retour arrière du canal stable.
+# Déclenchement manuel uniquement : onglet Actions > publication > Run workflow, branche main.
+# Pousse avec le jeton de l'application GitHub capitalisation-ia-publication,
+# seule identité autorisée à contourner les rulesets protection-main et tags-publication.
+
+name: publication
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "publication : nouveau tag et entrée stable ; retour-arriere : repointe l'entrée stable sur un tag existant"
+        type: choice
+        options: [publication, retour-arriere]
+        default: publication
+      plugin:
+        description: "Nom du plugin (dossier dans plugins/)"
+        type: string
+        required: true
+      version:
+        description: "Version semver x.y.z, sans préfixe v"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publication
+  cancel-in-progress: false
+
+jobs:
+  validation:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/validation.yml
+
+  publier:
+    needs: validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: publication
+    steps:
+      - name: Jeton de l'application de publication
+        id: jeton
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PUBLICATION_APP_ID }}
+          private-key: ${{ secrets.PUBLICATION_APP_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ steps.jeton.outputs.token }}
+
+      - name: Contrôle du commit
+        env:
+          COMMIT_VALIDE: ${{ github.sha }}
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$COMMIT_VALIDE" ]; then
+            echo "main a évolué depuis le déclenchement ($COMMIT_VALIDE) : relancer le workflow."
+            exit 1
+          fi
+
+      - name: Identité git de l'application
+        env:
+          GH_TOKEN: ${{ steps.jeton.outputs.token }}
+          SLUG: ${{ steps.jeton.outputs.app-slug }}
+        run: |
+          id="$(gh api "/users/${SLUG}[bot]" --jq .id)"
+          git config user.name "${SLUG}[bot]"
+          git config user.email "${id}+${SLUG}[bot]@users.noreply.github.com"
+
+      - name: Publication
+        env:
+          MODE: ${{ inputs.mode }}
+          PLUGIN: ${{ inputs.plugin }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -o pipefail
+          outils/publier.sh "$MODE" "$PLUGIN" "$VERSION" | tee resultat.txt
+          {
+            echo "## $MODE de $PLUGIN $VERSION"
+            echo
+            echo '```'
+            cat resultat.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

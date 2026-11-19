@@ -1,0 +1,10 @@
+{
+  "name": "temoin",
+  "description": "Plugin de diagnostic : affiche au démarrage de session le canal et la version actifs du marketplace capitalisationIA et signale une double activation des canaux.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": ["diagnostic", "capitalisation-ia"]
+}

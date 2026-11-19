@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "capitalisation-ia",
+  "description": "Canal stable du marketplace capitalisationIA : versions publiées des plugins de configuration Claude Code partagés entre projets.",
+  "owner": {
+    "name": "talbotgui",
+    "url": "https://github.com/talbotgui"
+  },
+  "plugins": []
+}
