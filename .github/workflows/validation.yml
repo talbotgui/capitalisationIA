@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  # Version de Claude Code utilisée en CI, à aligner sur VERSION_MIN_CLAUDE de outils/installer.sh.
+  # Version de Claude Code utilisée en CI, à aligner sur VERSION_MIN_CLAUDE du script de la skill /temoin:canal.
   CLAUDE_CODE_VERSION: "2.1.328"
   DISABLE_AUTOUPDATER: "1"
 
@@ -35,10 +35,10 @@ jobs:
           npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
           claude --version
 
-      - name: Version de Claude Code alignée avec installer.sh
+      - name: Version de Claude Code alignée avec la skill canal
         run: |
-          grep -q "^VERSION_MIN_CLAUDE=\"${CLAUDE_CODE_VERSION}\"$" outils/installer.sh \
-            || { echo "VERSION_MIN_CLAUDE de outils/installer.sh différente de ${CLAUDE_CODE_VERSION}"; exit 1; }
+          grep -q "^VERSION_MIN_CLAUDE=\"${CLAUDE_CODE_VERSION}\"$" plugins/temoin/skills/canal/configurer-canal.sh \
+            || { echo "VERSION_MIN_CLAUDE de configurer-canal.sh différente de ${CLAUDE_CODE_VERSION}"; exit 1; }
 
       - name: shellcheck
         run: git ls-files -z '*.sh' | xargs -0 shellcheck

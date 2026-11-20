@@ -24,7 +24,7 @@ En cours (19/11/2026) : développements terminés sur la branche claude/blissful
 * Paramétrage GitHub (application de publication, environnement publication, rulesets protection-main et tags-publication), réalisé par le mainteneur selon le [paramétrage GitHub du dépôt](../produit/mainteneur/parametrageGithub.md) ; branche par défaut renommée de master en main.
 * Catalogues stable (vide jusqu'à la première publication) et early access.
 * Plugin de diagnostic temoin.
-* outils/installer.sh, outils/publier.sh, outils/verifier-coherence.sh.
+* outils/publier.sh, outils/verifier-coherence.sh ; skill /temoin:canal (script configurer-canal.sh), qui remplace outils/installer.sh.
 * Workflows validation.yml (PR et main, job validation) et publication.yml (déclenchement manuel, modes publication et retour-arriere).
 * Tests bats, .gitattributes, CODEOWNERS, README.
 * [Documentation mainteneur](../produit/mainteneur/index.md) et première version de la [documentation utilisateur](../produit/utilisateur.md).
@@ -39,7 +39,7 @@ Prototype sur dépôt local, Claude Code 2.1.328, configuration isolée, puis v�
 * installation depuis GitHub avec une source git-subdir : confirmée ;
 * déclaration du catalogue early access par son URL brute (source url) : confirmée ;
 * activation simultanée des deux canaux : possible, ce qui confirme le besoin d'exclusion mutuelle ;
-* bascule de canal par installer.sh : confirmée (test automatisé) ;
+* bascule de canal par le script de /temoin:canal : confirmée (test automatisé) ;
 * déclaration du catalogue early access via le champ path d'une source git dans extraKnownMarketplaces : non prise en compte par la CLI ;
 * dependencies : un nom seul est résolu dans le catalogue du plugin déclarant, donc dans le même canal ; une plage de versions exige une version dans plugin.json au commit du tag.
 
@@ -51,11 +51,13 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 * dépendances déclarées par nom seul, sans plage de versions ;
 * commande claude plugin tag non utilisée (elle exige une version dans plugin.json), tags créés par outils/publier.sh ;
 * ajout du plugin temoin, conservé au-delà du prototype ;
-* ajout de outils/verifier-coherence.sh.
+* ajout de outils/verifier-coherence.sh ;
+* installation par plugin au lieu d'un clone et d'un script : outils/installer.sh devient la skill /temoin:canal (temoin 0.2.0), après les commandes natives /plugin marketplace add et /plugin install.
 
 ## Tests
 
-* 30 tests bats verts en local : publication et retour arrière (13), cohérence (7), hook temoin (5), installation et bascule de canal de bout en bout avec la CLI claude (5).
+* 31 tests bats verts en local : publication et retour arrière (13), cohérence (7), hook temoin (5), configuration et bascule de canal de bout en bout avec la CLI claude (6).
+* Chargement de la skill temoin:canal vérifié par claude plugin details ; exécution dans une session interactive non testable dans l'environnement de développement (à vérifier sur le poste du mainteneur).
 * shellcheck sans alerte sur tous les scripts.
 * claude plugin validate : catalogue early access valide en --strict, catalogue stable valide sans --strict (vide), plugin temoin valide.
 
@@ -72,6 +74,7 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 | Hypothèses des canaux confirmées ou plan amendé | atteint |
 | Publication et retour arrière de temoin via le workflow | publication de 0.1.0 réussie, retour arrière à faire (voir [Incidents](#incidents)) |
 | Statut validation obligatoire dans protection-main | fait par le mainteneur |
+| Installation par plugin, sans clone ni script | développée (temoin 0.2.0), à vérifier sur le poste du mainteneur |
 | Documentation mainteneur couvrant paramétrage GitHub et publication | atteint |
 
 ## Reste à faire
@@ -79,6 +82,7 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 1. Ouvrir et fusionner la PR de la branche claude/blissful-hopper-s7x2c4 vers main, contrôle validation vert.
 2. Rendre le statut validation obligatoire (étape 5 du [paramétrage GitHub](../produit/mainteneur/parametrageGithub.md#étape-5--statut-obligatoire-de-validationyml)).
 3. Publier temoin 0.1.0 via le [workflow de publication](../produit/mainteneur/publication.md).
-4. Sur le poste du mainteneur (Git Bash) : installer.sh stable, early puis stable, en vérifiant le message de temoin.
-5. Publier temoin 0.1.1 (section de CHANGELOG par PR), puis retour arrière en 0.1.0.
-6. Compléter ce rapport et clore la phase.
+4. Publier temoin 0.2.0 (skill /temoin:canal).
+5. Sur le poste du mainteneur (Git Bash) : installation selon la [documentation utilisateur](../produit/utilisateur.md#installation), puis /temoin:canal early et /temoin:canal stable, en vérifiant le message de temoin après chaque redémarrage.
+6. Retour arrière en 0.1.0, vérification, puis retour en 0.2.0 (mode retour-arriere vers 0.2.0).
+7. Compléter ce rapport et clore la phase.

@@ -20,7 +20,7 @@ Mettre en place le dépôt, les deux canaux, la publication et la CI, et valider
 * Arborescence, catalogues stable et early access, README, .gitattributes, CODEOWNERS.
 * Paramétrage GitHub : application de publication, environnement, rulesets (voir [Sécurité de la chaîne de livraison](01_planDeDemarrage.md#sécurité-de-la-chaîne-de-livraison)).
 * CI (validation.yml), workflow de publication (publication.yml) et outils/publier.sh.
-* outils/installer.sh.
+* Installation par plugin : skill /temoin:canal (voir [Distribution sur les postes](01_planDeDemarrage.md#distribution-sur-les-postes)).
 * Plugin de diagnostic temoin, support du prototype des deux canaux.
 * [Documentation mainteneur](../produit/mainteneur/index.md) : paramétrage GitHub et publication.
 * Ajout du statut obligatoire de validation.yml dans protection-main après sa première exécution sur main.

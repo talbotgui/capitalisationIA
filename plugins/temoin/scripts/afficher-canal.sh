@@ -30,7 +30,7 @@ if [ -f "$settings" ]; then
     | if ($p["temoin@capitalisation-ia"] == true) and ($p["temoin@capitalisation-ia-early"] == true)
       then "oui" else "non" end' "$settings" 2>/dev/null || echo "non")"
   if [ "$doublon" = "oui" ]; then
-    message="$message ATTENTION : les canaux stable et early access sont activés simultanément, chaque hook s'exécute deux fois. Relancer outils/installer.sh avec le canal souhaité."
+    message="$message ATTENTION : les canaux stable et early access sont activés simultanément, chaque hook s'exécute deux fois. Lancer /temoin:canal stable ou /temoin:canal early, puis redémarrer Claude Code."
   fi
 fi
 

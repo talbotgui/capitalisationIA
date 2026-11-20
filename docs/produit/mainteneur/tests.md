@@ -18,6 +18,6 @@ Prérequis : bats, shellcheck, jq et la CLI claude.
 * cohérence : outils/verifier-coherence.sh
 * tests : bats tests/
 
-Les tests de outils/installer.sh s'exécutent sur une copie locale du dépôt et une configuration Claude Code isolée (CLAUDE_CONFIG_DIR) : ils ne touchent pas la configuration du poste et n'accèdent pas au réseau. Ils sont ignorés si la CLI claude est absente.
+Les tests du script de la skill /temoin:canal (plugins/temoin/skills/canal/configurer-canal.sh) s'exécutent sur une copie locale du dépôt et une configuration Claude Code isolée (CLAUDE_CONFIG_DIR) : ils ne touchent pas la configuration du poste et n'accèdent pas au réseau. Ils sont ignorés si la CLI claude est absente.
 
-La version de Claude Code utilisée par la CI (CLAUDE_CODE_VERSION dans validation.yml) doit être égale à VERSION_MIN_CLAUDE de outils/installer.sh ; la CI le contrôle.
+La version de Claude Code utilisée par la CI (CLAUDE_CODE_VERSION dans validation.yml) doit être égale à VERSION_MIN_CLAUDE de plugins/temoin/skills/canal/configurer-canal.sh ; la CI le contrôle.
