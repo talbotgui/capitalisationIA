@@ -42,3 +42,26 @@ setup() {
   [ "$status" -eq 0 ]
   [ -z "$output" ]
 }
+
+@test "transmet le message à Claude via additionalContext" {
+  CLAUDE_PLUGIN_ROOT="/x/plugins/cache/capitalisation-ia/temoin/0.1.0" run bash "$SCRIPT"
+  [ "$status" -eq 0 ]
+  [ "$(jq -r .hookSpecificOutput.hookEventName <<<"$output")" = "SessionStart" ]
+  [[ "$(jq -r .hookSpecificOutput.additionalContext <<<"$output")" == *"canal stable, version 0.1.0"* ]]
+}
+
+@test "mode texte : message brut, alerte comprise" {
+  echo '{"enabledPlugins":{"temoin@capitalisation-ia":true,"temoin@capitalisation-ia-early":true}}' > "$CLAUDE_CONFIG_DIR/settings.json"
+  CLAUDE_PLUGIN_ROOT="/x/plugins/cache/capitalisation-ia-early/temoin/abc123" run bash "$SCRIPT" --texte
+  [ "$status" -eq 0 ]
+  [[ "$output" == "capitalisationIA : canal early access, version abc123 du plugin temoin. ATTENTION"* ]]
+}
+
+@test "mode texte : racine déduite de l'emplacement du script sans CLAUDE_PLUGIN_ROOT" {
+  local racine="$BATS_TEST_TMPDIR/plugins/cache/capitalisation-ia/temoin/0.3.0"
+  mkdir -p "$racine/scripts"
+  cp "$SCRIPT" "$racine/scripts/"
+  CLAUDE_PLUGIN_ROOT="" run bash "$racine/scripts/afficher-canal.sh" --texte
+  [ "$status" -eq 0 ]
+  [ "$output" = "capitalisationIA : canal stable, version 0.3.0 du plugin temoin." ]
+}
