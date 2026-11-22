@@ -30,6 +30,8 @@ En cours (22/11/2026) : développements terminés sur la branche claude/keen-all
 
 ## Écarts et choix de conception
 
+Choix validés par le mainteneur le 22/11/2026.
+
 * Contrôle du canal actif : aucun « canal déclaré » n'existe dans les settings ; règle retenue : si un plugin est activé dans les deux canaux, seule l'instance stable s'exécute. Le plan est amendé en ce sens.
 * Normalisation du remote : suppression des identifiants (jeton dans une URL https) et du port, rejet des formes non reconnues, ce qui évite tout chemin de journal hors du dossier prévu.
 * Coupe-circuit : non appliqué à temoin, qui n'écrit rien et sert au diagnostic.
