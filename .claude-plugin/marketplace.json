@@ -10,12 +10,12 @@
     {
       "name": "temoin",
       "description": "Plugin de diagnostic : affiche au démarrage de session le canal et la version actifs du marketplace capitalisationIA et signale une double activation des canaux.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": {
         "source": "git-subdir",
         "url": "https://github.com/talbotgui/capitalisationIA.git",
         "path": "plugins/temoin",
-        "ref": "temoin--v0.1.0"
+        "ref": "temoin--v0.2.0"
       }
     }
   ]
