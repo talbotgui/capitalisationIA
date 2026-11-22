@@ -16,6 +16,16 @@
         "path": "plugins/temoin",
         "ref": "main"
       }
+    },
+    {
+      "name": "socle",
+      "description": "Socle commun : journal local des prompts hors des projets, bibliothèque commune des hooks, conventions de commits et de rédaction, agent d'exploration du code en lecture seule.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/socle",
+        "ref": "main"
+      }
     }
   ]
 }

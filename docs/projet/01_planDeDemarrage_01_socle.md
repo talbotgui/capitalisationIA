@@ -30,4 +30,4 @@ Livrer le plugin socle (voir [Plugins prévus](01_planDeDemarrage.md#socle)) et 
 
 ## Rapport
 
-À rédiger à la fin de la phase, dans le fichier 01_rapportDeDemarrage_01_socle.md.
+[01_rapportDeDemarrage_01_socle.md](01_rapportDeDemarrage_01_socle.md)

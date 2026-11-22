@@ -1,0 +1,10 @@
+{
+  "name": "socle",
+  "description": "Socle commun du marketplace capitalisationIA : journal local des prompts hors des projets, bibliothèque commune des hooks, conventions de commits et de rédaction, agent d'exploration du code en lecture seule.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": ["journal", "conventions", "capitalisation-ia"]
+}

@@ -17,13 +17,13 @@ Rapport de la [phase 0](01_planDeDemarrage_00_fondation.md) du [plan de démarra
 
 ## État
 
-En cours (19/11/2026) : développements terminés sur la branche claude/blissful-hopper-s7x2c4, validation sur GitHub à dérouler par le mainteneur.
+Terminée (22/11/2026) : critères de sortie atteints, validés par le mainteneur sur son poste (Git Bash).
 
 ## Réalisé
 
 * Paramétrage GitHub (application de publication, environnement publication, rulesets protection-main et tags-publication), réalisé par le mainteneur selon le [paramétrage GitHub du dépôt](../produit/mainteneur/parametrageGithub.md) ; branche par défaut renommée de master en main.
 * Catalogues stable (vide jusqu'à la première publication) et early access.
-* Plugin de diagnostic temoin.
+* Plugin de diagnostic temoin, publié en stable en 0.1.0, 0.2.0 et 0.3.0.
 * outils/publier.sh, outils/verifier-coherence.sh ; skill /temoin:canal (script configurer-canal.sh), qui remplace outils/installer.sh.
 * Workflows validation.yml (PR et main, job validation) et publication.yml (déclenchement manuel, modes publication et retour-arriere).
 * Tests bats, .gitattributes, CODEOWNERS, README.
@@ -52,12 +52,13 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 * commande claude plugin tag non utilisée (elle exige une version dans plugin.json), tags créés par outils/publier.sh ;
 * ajout du plugin temoin, conservé au-delà du prototype ;
 * ajout de outils/verifier-coherence.sh ;
-* installation par plugin au lieu d'un clone et d'un script : outils/installer.sh devient la skill /temoin:canal (temoin 0.2.0), après les commandes natives /plugin marketplace add et /plugin install.
+* installation par plugin au lieu d'un clone et d'un script : outils/installer.sh devient la skill /temoin:canal (temoin 0.2.0), après les commandes natives /plugin marketplace add et /plugin install ;
+* extension VS Code : le systemMessage du SessionStart n'y est pas affiché ; le message de temoin est aussi transmis à Claude (additionalContext) et la skill /temoin:version l'affiche à la demande (temoin 0.3.0).
 
 ## Tests
 
-* 31 tests bats verts en local : publication et retour arrière (13), cohérence (7), hook temoin (5), configuration et bascule de canal de bout en bout avec la CLI claude (6).
-* Chargement de la skill temoin:canal vérifié par claude plugin details ; exécution dans une session interactive non testable dans l'environnement de développement (à vérifier sur le poste du mainteneur).
+* 34 tests bats verts en local : publication et retour arrière (13), cohérence (7), hook temoin (8), configuration et bascule de canal de bout en bout avec la CLI claude (6).
+* Sur le poste du mainteneur (Git Bash) : installation, bascule early puis stable avec /temoin:canal, retour arrière en 0.1.0 puis retour en version courante, message de temoin vérifié après chaque redémarrage, en ligne de commande et dans l'extension VS Code.
 * shellcheck sans alerte sur tous les scripts.
 * claude plugin validate : catalogue early access valide en --strict, catalogue stable valide sans --strict (vide), plugin temoin valide.
 
@@ -70,19 +71,13 @@ Le [plan de démarrage](01_planDeDemarrage.md) a été amendé en conséquence :
 
 | Critère | État |
 |---|---|
-| Installation stable, early access puis retour en stable sur un poste vierge | validé en local, à vérifier sur le poste du mainteneur |
+| Installation stable, early access puis retour en stable sur un poste vierge | atteint |
 | Hypothèses des canaux confirmées ou plan amendé | atteint |
-| Publication et retour arrière de temoin via le workflow | publication de 0.1.0 réussie, retour arrière à faire (voir [Incidents](#incidents)) |
-| Statut validation obligatoire dans protection-main | fait par le mainteneur |
-| Installation par plugin, sans clone ni script | développée (temoin 0.2.0), à vérifier sur le poste du mainteneur |
+| Publication et retour arrière de temoin via le workflow | atteint |
+| Statut validation obligatoire dans protection-main | atteint |
+| Installation par plugin, sans clone ni script | atteint |
 | Documentation mainteneur couvrant paramétrage GitHub et publication | atteint |
 
 ## Reste à faire
 
-1. Ouvrir et fusionner la PR de la branche claude/blissful-hopper-s7x2c4 vers main, contrôle validation vert.
-2. Rendre le statut validation obligatoire (étape 5 du [paramétrage GitHub](../produit/mainteneur/parametrageGithub.md#étape-5--statut-obligatoire-de-validationyml)).
-3. Publier temoin 0.1.0 via le [workflow de publication](../produit/mainteneur/publication.md).
-4. Publier temoin 0.2.0 (skill /temoin:canal).
-5. Sur le poste du mainteneur (Git Bash) : installation selon la [documentation utilisateur](../produit/utilisateur.md#installation), puis /temoin:canal early et /temoin:canal stable, en vérifiant le message de temoin après chaque redémarrage.
-6. Retour arrière en 0.1.0, vérification, puis retour en 0.2.0 (mode retour-arriere vers 0.2.0).
-7. Compléter ce rapport et clore la phase.
+Rien pour cette phase. Points reportés au [plan de démarrage](01_planDeDemarrage.md#points-ouverts) : signature des tags, analyse RGPD du journal des prompts.
