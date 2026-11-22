@@ -15,11 +15,11 @@ Rapport de la [phase 1](01_planDeDemarrage_01_socle.md) du [plan de démarrage](
 
 ## État
 
-En cours (22/11/2026) : développements terminés sur la branche claude/keen-allen-agvylk, validation sur le poste du mainteneur et publication à dérouler.
+Terminée (22/11/2026) : socle 1.0.0 publié en stable (tag socle--v1.0.0), critères de sortie atteints, validés par le mainteneur.
 
 ## Réalisé
 
-* Plugin socle (CHANGELOG 1.0.0), référencé dans le catalogue early access :
+* Plugin socle, référencé dans le catalogue early access et publié en stable en 1.0.0 :
   * hook UserPromptSubmit journaliser-prompt.sh, adapté de suiviProjets (même format d'entrée), journal hors projet en mode 600, dossiers en mode 700 ;
   * hook SessionStart (startup) purger-journaux.sh : rétention de 90 jours, paramétrable par CAPIA_RETENTION_JOURS ;
   * bibliothèque lib/commun.sh : normalisation du remote, identifiant de projet, coupe-circuit, contrôle d'instance active ;
@@ -42,6 +42,7 @@ Choix validés par le mainteneur le 22/11/2026.
 ## Tests
 
 * 46 tests bats verts en local, dont 12 pour socle : formes de remote, identifiants et port supprimés, formes rejetées, repli sans remote, coupe-circuit, instance active, journal (contenu, droits, aucun fichier dans le projet fixture), entrée invalide, purge et rétention.
+* Sur le poste du mainteneur (Git Bash), canaux early access puis stable : journal écrit hors projet avec ses droits, skills et agent opérationnels.
 * shellcheck sans alerte ; claude plugin validate vert sur les deux plugins et les deux catalogues ; outils/verifier-coherence.sh vert.
 
 ## Critères de sortie
@@ -49,14 +50,10 @@ Choix validés par le mainteneur le 22/11/2026.
 | Critère | État |
 |---|---|
 | Tests bats verts | atteint |
-| Journal écrit hors projet avec les bons droits, purge vérifiée | atteint en tests, à vérifier sur Git Bash (droits Windows) |
+| Journal écrit hors projet avec les bons droits, purge vérifiée | atteint |
 | Aucun fichier créé dans les projets fixtures | atteint |
-| Installation par une tierce personne avec la seule documentation utilisateur | à faire |
+| Installation par une tierce personne avec la seule documentation utilisateur | atteint |
 
 ## Reste à faire
 
-1. Fusionner la branche claude/keen-allen-agvylk sur main : socle livré au canal early access.
-2. Sur le poste du mainteneur (Git Bash) : /temoin:canal early, redémarrage, quelques prompts, vérification du journal et de ses droits, puis des skills et de l'agent.
-3. Publier socle 1.0.0 via le [workflow de publication](../produit/mainteneur/publication.md), puis /temoin:canal stable.
-4. Installation par une tierce personne selon la [documentation utilisateur](../produit/utilisateur.md#installation).
-5. Compléter ce rapport et clore la phase.
+Rien pour cette phase. Points reportés : accès des autres plugins à la bibliothèque commune ([phase 2](01_planDeDemarrage_02_reglesProjets.md)), journal technique de mesure des hooks ([phase 4](01_planDeDemarrage_04_pilote.md)).
