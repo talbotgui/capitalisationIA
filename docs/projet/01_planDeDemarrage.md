@@ -30,7 +30,7 @@ Industrialiser la configuration de Claude Code sur une cinquantaine de projets h
 * Stacks pilotes : Stack1 Java + Spring Boot, Stack2 TypeScript + Angular, Stack3 Rust.
 * Traçabilité : hook UserPromptSubmit sur le modèle de talbotgui/suiviProjets/.claude/hooks/journaliser-prompt.sh (pas de hook SessionEnd pour ce besoin), journal stocké hors des projets.
 * Pas de garde-fous via des hooks PreToolUse.
-* Distribution par script utilisateur (portée user), pas de managed settings à ce stade.
+* Distribution par plugin (portée user) : commandes natives /plugin, puis skill /temoin:canal pour le choix du canal ; pas de managed settings à ce stade.
 * Règles propres à chaque projet hors des dépôts de code : plugin unique regles-projets qui identifie le projet par son remote git ; les règles sont stockées dans ce dépôt (cadence de publication à surveiller).
 * Environnement des postes : exclusivement Git Bash, jq installé.
 * Publication stable par un workflow GitHub Actions à déclenchement manuel.
@@ -43,7 +43,7 @@ capitalisationIA/
 ├── .claude-plugin/marketplace.json                       catalogue stable « capitalisation-ia »
 ├── canaux/early-access/.claude-plugin/marketplace.json   catalogue « capitalisation-ia-early »
 ├── plugins/
-│   ├── temoin/                                plugin de diagnostic (canal et version actifs)
+│   ├── temoin/                                diagnostic (canal et version actifs) et skill /temoin:canal
 │   ├── socle/                                 journal des prompts, conventions git, bibliothèque commune
 │   │   └── CHANGELOG.md
 │   ├── regles-projets/                        règles par projet chargées au SessionStart
@@ -54,10 +54,9 @@ capitalisationIA/
 │   ├── stack-ts-angular/
 │   └── stack-rust/
 ├── outils/
-│   ├── installer.sh                           script d'installation poste développeur
 │   ├── publier.sh                             logique de publication appelée par le workflow
 │   └── verifier-coherence.sh                  contrôles de cohérence des catalogues et plugins (CI)
-├── .claude/rules/collaboration.md             règles de collaboration avec Claude sur ce dépôt
+├── .claude/rules/                             règles de Claude sur ce dépôt (collaboration, développement des plugins)
 ├── docs/
 │   ├── produit/
 │   │   ├── mainteneur/                        documentation du mainteneur (accueil index.md et pages)
@@ -85,7 +84,7 @@ Le catalogue stable étant à l'emplacement par défaut, /plugin marketplace add
 
 Exclusion mutuelle : un même plugin ne doit jamais être activé simultanément depuis les deux catalogues, sous peine d'exécuter chaque hook deux fois (double journalisation, double formatage). Trois protections :
 
-* installer.sh désactive explicitement dans enabledPlugins toutes les entrées de l'autre canal ;
+* la skill /temoin:canal désactive toutes les entrées de l'autre canal ;
 * chaque hook vérifie qu'il est l'instance du canal actif (comparaison de CLAUDE_PLUGIN_ROOT avec le canal déclaré dans les settings) et sort en code 0 sans rien faire sinon ;
 * la bascule de canal fait l'objet d'un test automatisé.
 
@@ -110,7 +109,7 @@ La fonction est couverte par des tests bats sur l'ensemble de ces formes.
 
 * Semver par plugin, tags <plugin>--v<version> (convention de Claude Code). La commande claude plugin tag n'est pas utilisée car elle exige une version dans plugin.json ; les tags sont créés par outils/publier.sh.
 * Un CHANGELOG.md par plugin.
-* Version minimale de Claude Code requise documentée dans le README, vérifiée par installer.sh et épinglée dans la CI (les fonctionnalités paths des skills, dependencies et git-subdir sont récentes).
+* Version minimale de Claude Code requise documentée dans le README, vérifiée par la skill /temoin:canal et épinglée dans la CI (les fonctionnalités paths des skills, dependencies et git-subdir sont récentes).
 
 Publication par le workflow .github/workflows/publication.yml, déclenchement manuel (workflow_dispatch) avec deux entrées : plugin et version. Étapes :
 
@@ -129,7 +128,8 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 ### temoin
 
-* Plugin de diagnostic livré en phase 0 pour le prototype, conservé ensuite : hook SessionStart (startup) qui affiche à l'utilisateur le canal et la version chargés, et signale une activation simultanée dans les deux canaux. N'écrit aucun fichier.
+* Plugin de diagnostic livré en phase 0 pour le prototype, conservé ensuite : hook SessionStart (startup) qui affiche à l'utilisateur le canal et la version chargés, et signale une activation simultanée dans les deux canaux, sans écrire de fichier.
+* Skill /temoin:canal stable|early, réservée à l'invocation par l'utilisateur : configuration du canal sur le poste (voir [Distribution sur les postes](#distribution-sur-les-postes)).
 
 ### socle
 
@@ -165,14 +165,18 @@ Certains projets possèdent déjà un CLAUDE.md ou un .claude/settings.json vers
 
 ## Distribution sur les postes
 
-outils/installer.sh [stable|early] :
+Installation entièrement dans Claude Code, sans clone ni script :
 
-1. Vérifie les prérequis : Git Bash, claude (version minimale), git, jq.
-2. Fusionne avec jq dans ~/.claude/settings.json les entrées extraKnownMarketplaces (avec autoUpdate: true) et enabledPlugins du canal choisi, désactive explicitement les plugins de l'autre canal, sans écraser le reste du fichier (sauvegarde préalable).
-3. Lance claude plugin install <plugin>@<marketplace> --scope user pour chaque plugin.
-4. Affiche la vérification à faire (/plugin dans une session).
+1. /plugin marketplace add talbotgui/capitalisationIA puis /plugin install temoin@capitalisation-ia (commandes natives).
+2. Après redémarrage, /temoin:canal stable|early (skill du plugin temoin, script plugins/temoin/skills/canal/configurer-canal.sh) :
+   * vérifie les prérequis : claude (version minimale), git, jq ;
+   * sauvegarde ~/.claude/settings.json ;
+   * déclare ou met à jour le marketplace du canal choisi et active son autoUpdate ;
+   * désactive les plugins de l'autre canal ;
+   * installe ou réactive tous les plugins du canal choisi, en portée user (claude plugin …).
+3. Redémarrage de Claude Code pour appliquer.
 
-Bascule de canal : relancer le script avec l'autre canal.
+Bascule de canal : /temoin:canal avec l'autre canal. Un plugin ne peut pas déclarer le marketplace qui le contient : la première étape reste donc manuelle.
 
 Le dépôt étant public, aucun jeton n'est nécessaire pour l'installation ni pour la mise à jour automatique.
 
@@ -206,7 +210,7 @@ Deux documentations distinctes, rédigées selon les conventions du dépôt et t
 [Documentation utilisateur](../produit/utilisateur.md), à destination d'un utilisateur du marketplace et de ses plugins :
 
 * prérequis du poste (Git Bash, jq, version minimale de Claude Code) ;
-* installation avec installer.sh, choix et bascule de canal stable ou early access, vérification avec /plugin, désinstallation ;
+* installation par /plugin et /temoin:canal, choix et bascule de canal stable ou early access, vérification avec /plugin, désinstallation ;
 * description de chaque plugin : ce qu'il fait, quand ses hooks se déclenchent, ce qu'il écrit et où ;
 * journal des prompts : emplacement, droits, rétention, avertissement sur les secrets collés dans un prompt ;
 * coupe-circuit CAPIA_DESACTIVER ;

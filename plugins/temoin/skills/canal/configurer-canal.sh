@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Fichier généré avec l'assistance de l'IA (Claude).
 #
-# Installation des plugins du marketplace capitalisationIA sur un poste développeur (portée user).
+# Configuration du canal du marketplace capitalisationIA sur le poste (portée user).
+# Appelé par la skill /temoin:canal ; utilisable directement pour les tests.
 #
-# Usage : outils/installer.sh [stable|early]     (défaut : stable)
+# Usage : configurer-canal.sh stable|early
 #
 # Le script :
 #   1. vérifie les prérequis (claude en version minimale, git, jq) ;
@@ -11,7 +12,7 @@
 #   3. déclare le marketplace du canal choisi (ou le met à jour) et active sa mise à jour automatique ;
 #   4. désactive les plugins de l'autre canal (un plugin ne doit jamais être actif dans les deux canaux) ;
 #   5. installe ou réactive tous les plugins du canal choisi.
-# Relancer le script avec l'autre canal effectue la bascule.
+# Les changements prennent effet à la session Claude Code suivante.
 #
 # Variables d'environnement (tests) :
 #   CAPIA_SOURCE_STABLE  source du catalogue stable (défaut talbotgui/capitalisationIA)
@@ -46,14 +47,14 @@ marketplace_connu() {
   claude plugin marketplace list --json | jq -e --arg m "$1" 'any(.[]; .name == $m)' >/dev/null
 }
 
-canal="${1:-stable}"
+canal="${1:-}"
 case "$canal" in
   stable)
     marketplace="$MARKETPLACE_STABLE"; source="$SOURCE_STABLE"; autre="$MARKETPLACE_EARLY" ;;
   early)
     marketplace="$MARKETPLACE_EARLY"; source="$SOURCE_EARLY"; autre="$MARKETPLACE_STABLE" ;;
   *)
-    echo "Usage : $0 [stable|early]" >&2
+    echo "Usage : $0 stable|early" >&2
     exit 2 ;;
 esac
 
@@ -124,6 +125,5 @@ for nom in $plugins; do
 done
 
 echo
-echo "Installation terminée sur le canal $canal."
-echo "Vérification : ouvrir une nouvelle session Claude Code ; le plugin temoin affiche le canal et la version chargés."
-echo "La commande /plugin liste les plugins installés et leur état."
+echo "Canal $canal configuré."
+echo "Redémarrer Claude Code (nouvelle session) pour appliquer les changements ; le plugin temoin affichera alors le canal et la version chargés."

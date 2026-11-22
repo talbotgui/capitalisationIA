@@ -15,17 +15,14 @@ Marketplace de plugins Claude Code partagés entre projets, sans aucune trace de
 
 ## Installation rapide
 
-Depuis Git Bash, avec claude, git et jq disponibles :
+Dans une session Claude Code (Git Bash, jq disponible) :
 
-```bash
-git clone https://github.com/talbotgui/capitalisationIA.git
+```
+/plugin marketplace add talbotgui/capitalisationIA
+/plugin install temoin@capitalisation-ia
 ```
 
-```bash
-capitalisationIA/outils/installer.sh stable
-```
-
-Remplacer stable par early pour le canal early access. Le détail figure dans la [documentation utilisateur](docs/produit/utilisateur.md).
+Redémarrer Claude Code, lancer /temoin:canal stable (ou early), puis redémarrer à nouveau. Le détail figure dans la [documentation utilisateur](docs/produit/utilisateur.md).
 
 ## Documentation
 
@@ -38,7 +35,7 @@ Remplacer stable par early pour le canal early access. Le détail figure dans la
 * .claude-plugin/marketplace.json : catalogue stable.
 * canaux/early-access/.claude-plugin/marketplace.json : catalogue early access.
 * plugins/ : un dossier par plugin.
-* outils/ : installation, publication, contrôles de cohérence.
+* outils/ : publication, contrôles de cohérence.
 * tests/ : tests bats.
 * docs/produit/ : documentation du produit ; docs/projet/ : plans et rapports.
 * .github/workflows/ : validation (PR et main) et publication (déclenchement manuel).

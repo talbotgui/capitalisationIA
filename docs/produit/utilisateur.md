@@ -28,19 +28,24 @@ Le dépôt étant public, aucun jeton ni identifiant n'est nécessaire.
 
 ## Installation
 
-1. Cloner le dépôt : git clone https://github.com/talbotgui/capitalisationIA.git
-2. Lancer le script d'installation avec le canal souhaité : capitalisationIA/outils/installer.sh stable (ou early).
+Tout se fait dans une session Claude Code, sans clone ni script :
 
-Le script sauvegarde ~/.claude/settings.json (fichier settings.json.capia-<date>.bak), déclare le marketplace du canal choisi avec mise à jour automatique, désactive les plugins de l'autre canal, puis installe ou réactive tous les plugins du canal choisi, en portée user. Le reste de settings.json est conservé.
+1. /plugin marketplace add talbotgui/capitalisationIA
+2. /plugin install temoin@capitalisation-ia
+3. Redémarrer Claude Code.
+4. /temoin:canal stable (ou /temoin:canal early pour le canal early access).
+5. Redémarrer Claude Code.
 
-Le script peut être relancé sans risque : il ne fait que compléter ce qui manque.
+La skill /temoin:canal sauvegarde ~/.claude/settings.json (fichier settings.json.capia-<date>.bak), déclare le marketplace du canal choisi avec mise à jour automatique, désactive les plugins de l'autre canal, puis installe ou réactive tous les plugins du canal choisi, en portée user. Le reste de settings.json est conservé.
+
+La skill peut être relancée sans risque : elle ne fait que compléter ce qui manque.
 
 ## Canaux stable et early access
 
 * stable (marketplace capitalisation-ia) : versions explicitement publiées, recommandé pour un usage quotidien.
 * early access (marketplace capitalisation-ia-early) : chaque modification fusionnée est livrée au démarrage suivant de Claude Code ; réservé aux pilotes.
 
-Pour changer de canal, relancer le script avec l'autre canal. Un plugin ne doit jamais être actif dans les deux canaux à la fois : chaque hook s'exécuterait deux fois.
+Pour changer de canal : /temoin:canal avec l'autre canal, puis redémarrer Claude Code. Un plugin ne doit jamais être actif dans les deux canaux à la fois : chaque hook s'exécuterait deux fois.
 
 Les mises à jour sont appliquées automatiquement au démarrage de Claude Code.
 
@@ -56,13 +61,14 @@ Pour chaque plugin : claude plugin uninstall <plugin>@<marketplace>, puis claude
 
 ### temoin
 
-Plugin de diagnostic. Au démarrage de session, il affiche le canal et la version chargés, et signale une activation simultanée dans les deux canaux. Il n'écrit aucun fichier.
+Plugin de diagnostic et de configuration. Au démarrage de session, il affiche le canal et la version chargés, et signale une activation simultanée dans les deux canaux. Sa skill /temoin:canal stable|early configure le canal (voir [Installation](#installation)). Seule cette skill modifie la configuration utilisateur ; le hook n'écrit aucun fichier.
 
 ## Dépannage
 
-* Le script indique une version de Claude Code insuffisante : lancer claude update puis relancer le script.
-* Le script refuse settings.json : le fichier n'est pas un JSON valide ; le corriger, ou restaurer une sauvegarde .bak, puis relancer.
-* Le message de temoin signale les deux canaux actifs : relancer le script avec le canal souhaité.
+* /temoin:canal indique une version de Claude Code insuffisante : lancer claude update puis relancer la skill.
+* /temoin:canal refuse settings.json : le fichier n'est pas un JSON valide ; le corriger, ou restaurer une sauvegarde .bak, puis relancer.
+* Le message de temoin signale les deux canaux actifs : lancer /temoin:canal avec le canal souhaité, puis redémarrer.
+* /temoin:canal est introuvable : la version installée de temoin est antérieure à 0.2.0 ; lancer /plugin marketplace update capitalisation-ia, puis redémarrer.
 * Un plugin n'apparaît pas après une publication : lancer claude plugin marketplace update <marketplace>, puis redémarrer Claude Code.
 
 ## Sections à compléter
