@@ -2,8 +2,10 @@
 
 # Projet <nom>
 
+Index court, injecté à chaque session : quelques lignes au plus. Aucune règle de langage, portée par le plugin de stack.
+
 * Objet : <une phrase sur le rôle du projet>.
-* Stack : <langages, frameworks, outils de construction>.
-* Arborescence : <répertoires principaux et leur rôle>.
-* Commandes : construction <commande>, tests <commande>, analyse statique <commande>.
-* Points d'attention : <trois à cinq règles essentielles, les détails étant dans les fichiers thématiques>.
+* Stack : <stack, par exemple Java Spring> ; règles de langage fournies par le plugin <stack-...>.
+* Commandes : construction <commande>, tests <commande>.
+* Dérogations aux règles de la stack : <liste, ou aucune>.
+* Spécificités du projet : <trois à cinq points essentiels ; les détails éventuels dans les fichiers thématiques>.

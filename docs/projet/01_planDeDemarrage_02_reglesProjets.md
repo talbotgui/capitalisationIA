@@ -18,7 +18,7 @@ Livrer le plugin regles-projets (voir [Plugins prévus](01_planDeDemarrage.md#re
 ## Contenu
 
 * Hook SessionStart d'injection des règles, mapping des remotes normalisés.
-* Modèle de dossier projet.
+* Modèle de dossier projet : index court et fichiers réservés aux spécificités du projet (voir [Organisation des règles](01_planDeDemarrage.md#organisation-des-règles)).
 
 ## Critères de sortie
 

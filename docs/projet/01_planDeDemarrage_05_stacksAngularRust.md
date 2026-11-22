@@ -19,6 +19,8 @@ Livrer stack-ts-angular puis stack-rust en intégrant les retours du pilote.
 
 * stack-ts-angular.
 * stack-rust.
+* Règles de langage en skills avec paths, une par thème, selon le modèle de la [phase 3](01_planDeDemarrage_03_stackJavaSpring.md#contenu).
+* Réduction de l'index de suiviprojets dans regles-projets aux seules spécificités du projet, les règles Angular et Rust étant portées par les plugins de stack.
 
 ## Critères de sortie
 
