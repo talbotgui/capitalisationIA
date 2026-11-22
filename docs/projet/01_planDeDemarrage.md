@@ -129,6 +129,7 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 ### temoin
 
 * Plugin de diagnostic livré en phase 0 pour le prototype, conservé ensuite : hook SessionStart (startup) qui affiche à l'utilisateur le canal et la version chargés, et signale une activation simultanée dans les deux canaux, sans écrire de fichier.
+* Message aussi transmis à Claude (additionalContext) et skill /temoin:version pour l'afficher à la demande, l'extension VS Code n'affichant pas le message de démarrage.
 * Skill /temoin:canal stable|early, réservée à l'invocation par l'utilisateur : configuration du canal sur le poste (voir [Distribution sur les postes](#distribution-sur-les-postes)).
 
 ### socle

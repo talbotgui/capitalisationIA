@@ -51,7 +51,7 @@ Les mises à jour sont appliquées automatiquement au démarrage de Claude Code.
 
 ## Vérification
 
-Ouvrir une nouvelle session Claude Code : le plugin temoin affiche un message du type « capitalisationIA : canal stable, version 0.1.0 du plugin temoin ». La commande /plugin liste les plugins installés et leur état.
+Ouvrir une nouvelle session Claude Code : le plugin temoin affiche un message du type « capitalisationIA : canal stable, version 0.1.0 du plugin temoin ». Dans l'extension VS Code, ce message n'est pas affiché au démarrage : lancer /temoin:version, ou demander à Claude « quel canal ? ». La commande /plugin liste les plugins installés et leur état.
 
 ## Désinstallation
 
@@ -61,7 +61,7 @@ Pour chaque plugin : claude plugin uninstall <plugin>@<marketplace>, puis claude
 
 ### temoin
 
-Plugin de diagnostic et de configuration. Au démarrage de session, il affiche le canal et la version chargés, et signale une activation simultanée dans les deux canaux. Sa skill /temoin:canal stable|early configure le canal (voir [Installation](#installation)). Seule cette skill modifie la configuration utilisateur ; le hook n'écrit aucun fichier.
+Plugin de diagnostic et de configuration. Au démarrage de session, il affiche le canal et la version chargés, et signale une activation simultanée dans les deux canaux. Ce message est aussi transmis à Claude, et la skill /temoin:version l'affiche à la demande, notamment dans l'extension VS Code. Sa skill /temoin:canal stable|early configure le canal (voir [Installation](#installation)). Seule cette skill modifie la configuration utilisateur ; le hook n'écrit aucun fichier.
 
 ## Dépannage
 
