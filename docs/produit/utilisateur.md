@@ -11,6 +11,8 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider.
 * [Vérification](#vérification)
 * [Désinstallation](#désinstallation)
 * [Plugins disponibles](#plugins-disponibles)
+* [Journal des prompts](#journal-des-prompts)
+* [Coupe-circuit](#coupe-circuit)
 * [Dépannage](#dépannage)
 * [Sections à compléter](#sections-à-compléter)
 
@@ -63,6 +65,34 @@ Pour chaque plugin : claude plugin uninstall <plugin>@<marketplace>, puis claude
 
 Plugin de diagnostic et de configuration. Au démarrage de session, il affiche le canal et la version chargés, et signale une activation simultanée dans les deux canaux. Ce message est aussi transmis à Claude, et la skill /temoin:version l'affiche à la demande, notamment dans l'extension VS Code. Sa skill /temoin:canal stable|early configure le canal (voir [Installation](#installation)). Seule cette skill modifie la configuration utilisateur ; le hook n'écrit aucun fichier.
 
+### socle
+
+Socle commun, installé avec les autres plugins du canal par /temoin:canal.
+
+* Hook au dépôt de chaque prompt (UserPromptSubmit) : consigne le prompt dans le journal local (voir [Journal des prompts](#journal-des-prompts)).
+* Hook au démarrage de session : purge des entrées du journal de plus de 90 jours.
+* Skills conventions-commits et redaction-markdown, utilisées par Claude lors d'un commit ou de la rédaction d'un fichier .md ; les règles du projet (CLAUDE.md) prévalent en cas de contradiction.
+* Agent explorateur-code : exploration du code en lecture seule, à demander explicitement (« utilise l'agent explorateur-code pour… ») ou choisi par Claude.
+
+Le plugin n'écrit rien dans les projets : son seul fichier est le journal des prompts.
+
+## Journal des prompts
+
+* Emplacement : ~/.claude/capitalisation-ia/journaux/<projet>/prompts.log, où <projet> est le remote origin du dépôt sous la forme hote/proprietaire/depot (par exemple github.com/talbotgui/capitalisationia), ou sans-remote/<dossier> à défaut de remote.
+* Contenu : pour chaque prompt de la session principale, l'horodatage, le texte intégral du prompt et une ligne ---. Les échanges internes des sous-agents ne sont pas journalisés.
+* Droits : fichier lisible par le seul utilisateur (mode 600), dossiers en mode 700. Aucune transmission distante.
+* Rétention : 90 jours, purge automatique au démarrage de session ; la variable d'environnement CAPIA_RETENTION_JOURS permet une autre durée.
+* Avertissement : un secret collé dans un prompt (mot de passe, jeton, clé) est conservé dans le journal. Ne jamais coller de secret dans un prompt ; en cas d'erreur, supprimer l'entrée concernée du fichier.
+
+## Coupe-circuit
+
+En cas de dysfonctionnement d'un hook, la variable d'environnement CAPIA_DESACTIVER, positionnée avant de lancer Claude Code, désactive les hooks sans désinstaller les plugins ni modifier le projet :
+
+* CAPIA_DESACTIVER=1 : tous les hooks du marketplace (hors temoin, qui n'écrit rien) ;
+* CAPIA_DESACTIVER=socle (ou une liste séparée par des virgules, par exemple socle,stack-rust) : les hooks des plugins cités.
+
+Exemple dans Git Bash : CAPIA_DESACTIVER=socle claude. Signaler ensuite l'incident au mainteneur.
+
 ## Dépannage
 
 * /temoin:canal indique une version de Claude Code insuffisante : lancer claude update puis relancer la skill.
@@ -75,8 +105,6 @@ Plugin de diagnostic et de configuration. Au démarrage de session, il affiche l
 
 Sections prévues par le plan, rédigées au fil des phases :
 
-* plugins socle, regles-projets et plugins de stack (rôle, déclenchement des hooks, fichiers écrits) ;
-* journal des prompts (emplacement, droits, rétention, avertissement sur les secrets) ;
-* coupe-circuit CAPIA_DESACTIVER ;
+* plugins regles-projets et plugins de stack (rôle, déclenchement des hooks, fichiers écrits) ;
 * demande d'ajout ou de modification des règles de son projet ;
 * remontée d'incident.

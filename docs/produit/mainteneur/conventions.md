@@ -6,6 +6,7 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider.
 
 * [Organisation du dépôt](#organisation-du-dépôt)
 * [Ajout d'un plugin](#ajout-dun-plugin)
+* [Bibliothèque commune des hooks](#bibliothèque-commune-des-hooks)
 
 Retour à l'[accueil de la documentation mainteneur](index.md).
 
@@ -29,3 +30,14 @@ Retour à l'[accueil de la documentation mainteneur](index.md).
 3. Ajouter les tests bats dans tests/.
 4. Ouvrir une PR ; après fusion, le plugin est livré au canal early access.
 5. Publier la première version stable avec le [workflow de publication](publication.md) : l'entrée du catalogue stable est créée automatiquement.
+
+## Bibliothèque commune des hooks
+
+plugins/socle/lib/commun.sh, à sourcer par les scripts de hooks (tests dans [tests/socle.bats](../../../tests/socle.bats)) :
+
+* capia_normaliser_remote : identifiant hote/proprietaire/depot d'un remote git, en minuscules, sans suffixe .git ni barre finale. Formes acceptées : git@hote:proprietaire/depot.git, ssh://git@hote[:port]/proprietaire/depot.git, https://[identifiants@]hote[:port]/proprietaire/depot(.git). Les identifiants et le port sont supprimés ; toute autre forme (chemin local, plus de deux segments, segment . ou ..) donne un résultat vide.
+* capia_identifiant_projet : remote origin normalisé, sinon sans-remote/<nom du dossier racine>.
+* capia_desactive <plugin> : coupe-circuit CAPIA_DESACTIVER (1, all ou liste de plugins séparés par des virgules).
+* capia_instance_active <plugin> : faux pour l'instance early access d'un plugin également activé dans le canal stable (seule l'instance stable s'exécute) ; vrai hors installation par un marketplace du dépôt.
+
+Chaque script de hook commence par le coupe-circuit puis le contrôle d'instance, et sort toujours en code 0. Les données locales du marketplace sont écrites sous ~/.claude/capitalisation-ia/ (CLAUDE_CONFIG_DIR si défini), jamais dans le projet.

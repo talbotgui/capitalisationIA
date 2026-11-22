@@ -85,7 +85,7 @@ Le catalogue stable étant à l'emplacement par défaut, /plugin marketplace add
 Exclusion mutuelle : un même plugin ne doit jamais être activé simultanément depuis les deux catalogues, sous peine d'exécuter chaque hook deux fois (double journalisation, double formatage). Trois protections :
 
 * la skill /temoin:canal désactive toutes les entrées de l'autre canal ;
-* chaque hook vérifie qu'il est l'instance du canal actif (comparaison de CLAUDE_PLUGIN_ROOT avec le canal déclaré dans les settings) et sort en code 0 sans rien faire sinon ;
+* chaque hook vérifie qu'il est l'instance du canal actif (si le plugin est activé dans les deux canaux, seule l'instance stable s'exécute, d'après CLAUDE_PLUGIN_ROOT et enabledPlugins des settings) et sort en code 0 sans rien faire sinon ;
 * la bascule de canal fait l'objet d'un test automatisé.
 
 Les résultats du prototype de phase 0 sont consignés dans le [rapport de la phase 0](01_rapportDeDemarrage_00_fondation.md#résultats-du-prototype).
@@ -156,7 +156,7 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 ### Règles communes à tous les hooks
 
-* Coupe-circuit : la variable d'environnement CAPIA_DESACTIVER=1 (ou CAPIA_DESACTIVER=<plugin>,<plugin>) fait sortir les hooks concernés immédiatement en code 0, sans modification du dépôt projet.
+* Coupe-circuit : la variable d'environnement CAPIA_DESACTIVER=1 (ou CAPIA_DESACTIVER=<plugin>,<plugin>), hors temoin qui n'écrit rien, fait sortir les hooks concernés immédiatement en code 0, sans modification du dépôt projet.
 * Contrôle du canal actif (voir [Canaux stable et early access](#canaux-stable-et-early-access)).
 * Scripts en fins de ligne LF (.gitattributes) et bit exécutable positionné dans git.
 
@@ -243,7 +243,7 @@ Chaque phase est relue dans un contexte isolé et validée explicitement avant d
 | Phase | Plan | Rapport |
 |---|---|---|
 | 0 : fondations | [01_planDeDemarrage_00_fondation.md](01_planDeDemarrage_00_fondation.md) | [01_rapportDeDemarrage_00_fondation.md](01_rapportDeDemarrage_00_fondation.md) |
-| 1 : socle | [01_planDeDemarrage_01_socle.md](01_planDeDemarrage_01_socle.md) | à venir |
+| 1 : socle | [01_planDeDemarrage_01_socle.md](01_planDeDemarrage_01_socle.md) | [01_rapportDeDemarrage_01_socle.md](01_rapportDeDemarrage_01_socle.md) |
 | 2 : règles projets | [01_planDeDemarrage_02_reglesProjets.md](01_planDeDemarrage_02_reglesProjets.md) | à venir |
 | 3 : stack Java Spring | [01_planDeDemarrage_03_stackJavaSpring.md](01_planDeDemarrage_03_stackJavaSpring.md) | à venir |
 | 4 : pilote | [01_planDeDemarrage_04_pilote.md](01_planDeDemarrage_04_pilote.md) | à venir |
