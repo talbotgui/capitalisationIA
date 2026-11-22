@@ -2,11 +2,21 @@
 # Fichier généré avec l'assistance de l'IA (Claude).
 # Hook SessionStart du plugin temoin : affiche le canal et la version chargés
 # et signale une activation simultanée dans les deux canaux.
+# Sortie JSON : systemMessage (affiché par la ligne de commande) et additionalContext
+# (transmis à Claude, utile dans les interfaces qui n'affichent pas systemMessage, comme VS Code).
+# Option --texte (skill /temoin:version) : message en texte brut ; sans CLAUDE_PLUGIN_ROOT,
+# la racine du plugin est déduite de l'emplacement du script.
 # Ne modifie rien et sort toujours en code 0.
 
 set -u
 
+mode="json"
+[ "${1:-}" = "--texte" ] && mode="texte"
+
 racine="${CLAUDE_PLUGIN_ROOT:-}"
+if [ -z "$racine" ] && [ "$mode" = "texte" ]; then
+  racine="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 if [ -z "$racine" ] || ! command -v jq >/dev/null 2>&1; then
   exit 0
 fi
@@ -34,5 +44,15 @@ if [ -f "$settings" ]; then
   fi
 fi
 
-jq -n --arg m "$message" '{systemMessage: $m}'
+if [ "$mode" = "texte" ]; then
+  printf '%s\n' "$message"
+else
+  jq -n --arg m "$message" '{
+    systemMessage: $m,
+    hookSpecificOutput: {
+      hookEventName: "SessionStart",
+      additionalContext: ("Plugin temoin (diagnostic) : " + $m + " Si l'"'"'utilisateur demande le canal ou la version du marketplace capitalisationIA, répondre avec cette information.")
+    }
+  }'
+fi
 exit 0
