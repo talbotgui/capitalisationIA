@@ -52,7 +52,7 @@ entree_stable() {
 }
 
 @test "publication : refuse une version sans section dans le CHANGELOG" {
-  run outils/publier.sh publication temoin 0.3.0
+  run outils/publier.sh publication temoin 99.0.0
   [ "$status" -ne 0 ]
   [[ "$output" == *"CHANGELOG"* ]]
 }
