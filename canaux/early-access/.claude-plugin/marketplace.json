@@ -26,6 +26,16 @@
         "path": "plugins/socle",
         "ref": "main"
       }
+    },
+    {
+      "name": "regles-projets",
+      "description": "Règles propres à chaque projet, stockées hors des dépôts de code et injectées au démarrage de session selon le remote git du projet.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/regles-projets",
+        "ref": "main"
+      }
     }
   ]
 }

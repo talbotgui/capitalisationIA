@@ -33,7 +33,7 @@ Retour à l'[accueil de la documentation mainteneur](index.md).
 
 ## Bibliothèque commune des hooks
 
-plugins/socle/lib/commun.sh, à sourcer par les scripts de hooks (tests dans [tests/socle.bats](../../../tests/socle.bats)) :
+plugins/socle/lib/commun.sh, à sourcer par les scripts de hooks. Un plugin qui en a besoin en embarque une copie identique dans son propre dossier lib/ (le chemin de socle n'est pas connu des autres plugins) ; outils/verifier-coherence.sh contrôle que chaque copie est identique à celle de socle. Toute modification se fait dans socle puis est recopiée, et enrichit le CHANGELOG de chaque plugin concerné (tests dans [tests/socle.bats](../../../tests/socle.bats)) :
 
 * capia_normaliser_remote : identifiant hote/proprietaire/depot d'un remote git, en minuscules, sans suffixe .git ni barre finale. Formes acceptées : git@hote:proprietaire/depot.git, ssh://git@hote[:port]/proprietaire/depot.git, https://[identifiants@]hote[:port]/proprietaire/depot(.git). Les identifiants et le port sont supprimés ; toute autre forme (chemin local, plus de deux segments, segment . ou ..) donne un résultat vide.
 * capia_identifiant_projet : remote origin normalisé, sinon sans-remote/<nom du dossier racine>.

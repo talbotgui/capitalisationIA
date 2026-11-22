@@ -1,0 +1,8 @@
+{
+  "projets": [
+    {
+      "dossier": "suiviprojets",
+      "remotes": ["github.com/talbotgui/suiviprojets"]
+    }
+  ]
+}

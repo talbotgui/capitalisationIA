@@ -76,6 +76,12 @@ Socle commun, installé avec les autres plugins du canal par /temoin:canal.
 
 Le plugin n'écrit rien dans les projets : son seul fichier est le journal des prompts.
 
+### regles-projets
+
+Règles propres à chaque projet, stockées dans le dépôt capitalisationIA et non dans le projet. Au démarrage de session, après une reprise, un /clear ou un compactage, le plugin reconnaît le projet ouvert à son remote origin et transmet ses règles à Claude ; en ligne de commande, le message « capitalisationIA : règles du projet <projet> chargées. » s'affiche au démarrage. Sur un projet non référencé ou sans remote, il ne fait rien. Il n'écrit aucun fichier. Le CLAUDE.md et les règles versionnées du projet prévalent en cas de contradiction.
+
+Pour faire ajouter ou modifier les règles de son projet : ouvrir une issue sur talbotgui/capitalisationIA en indiquant le remote du projet et les règles souhaitées, sans aucune information confidentielle (le dépôt est public), ou proposer directement une PR selon la [documentation mainteneur](mainteneur/reglesProjets.md).
+
 ## Journal des prompts
 
 * Emplacement : ~/.claude/capitalisation-ia/journaux/<projet>/prompts.log, où <projet> est le remote origin du dépôt sous la forme hote/proprietaire/depot (par exemple github.com/talbotgui/capitalisationia), ou sans-remote/<dossier> à défaut de remote.
@@ -89,7 +95,7 @@ Le plugin n'écrit rien dans les projets : son seul fichier est le journal des p
 En cas de dysfonctionnement d'un hook, la variable d'environnement CAPIA_DESACTIVER, positionnée avant de lancer Claude Code, désactive les hooks sans désinstaller les plugins ni modifier le projet :
 
 * CAPIA_DESACTIVER=1 : tous les hooks du marketplace (hors temoin, qui n'écrit rien) ;
-* CAPIA_DESACTIVER=socle (ou une liste séparée par des virgules, par exemple socle,stack-rust) : les hooks des plugins cités.
+* CAPIA_DESACTIVER=socle (ou une liste séparée par des virgules, par exemple socle,regles-projets) : les hooks des plugins cités.
 
 Exemple dans Git Bash : CAPIA_DESACTIVER=socle claude. Signaler ensuite l'incident au mainteneur.
 
@@ -105,6 +111,5 @@ Exemple dans Git Bash : CAPIA_DESACTIVER=socle claude. Signaler ensuite l'incide
 
 Sections prévues par le plan, rédigées au fil des phases :
 
-* plugins regles-projets et plugins de stack (rôle, déclenchement des hooks, fichiers écrits) ;
-* demande d'ajout ou de modification des règles de son projet ;
+* plugins de stack (rôle, déclenchement des hooks, fichiers écrits) ;
 * remontée d'incident.

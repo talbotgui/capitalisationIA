@@ -28,4 +28,4 @@ Livrer le plugin regles-projets (voir [Plugins prévus](01_planDeDemarrage.md#re
 
 ## Rapport
 
-À rédiger à la fin de la phase, dans le fichier 01_rapportDeDemarrage_02_reglesProjets.md.
+[01_rapportDeDemarrage_02_reglesProjets.md](01_rapportDeDemarrage_02_reglesProjets.md)

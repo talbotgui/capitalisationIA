@@ -1,0 +1,10 @@
+{
+  "name": "regles-projets",
+  "description": "Règles propres à chaque projet, stockées hors des dépôts de code : le projet est identifié par son remote git et ses règles sont injectées au démarrage de session.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": ["regles", "projets", "capitalisation-ia"]
+}

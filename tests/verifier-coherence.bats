@@ -67,3 +67,25 @@ modifier_json() {
   [ "$status" -ne 0 ]
   [[ "$output" == *"doit avoir la ref temoin--v1.0.1"* ]]
 }
+
+@test "détecte une copie divergente de la bibliothèque commune" {
+  echo "# modification" >> plugins/regles-projets/lib/commun.sh
+  run outils/verifier-coherence.sh
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"diffère de plugins/socle/lib/commun.sh"* ]]
+}
+
+@test "détecte un mapping vers un dossier sans index.md" {
+  modifier_json plugins/regles-projets/projets/mapping.json '.projets += [{"dossier": "absent", "remotes": ["github.com/x/absent"]}]'
+  run outils/verifier-coherence.sh
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"absent/index.md absent"* ]]
+}
+
+@test "détecte un remote non normalisé ou en double dans le mapping" {
+  modifier_json plugins/regles-projets/projets/mapping.json '.projets[0].remotes += ["https://github.com/X/Y.git", .projets[0].remotes[0]]'
+  run outils/verifier-coherence.sh
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"non normalisé"* ]]
+  [[ "$output" == *"associé à plusieurs projets"* ]]
+}

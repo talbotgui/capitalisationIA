@@ -136,7 +136,7 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 * Hook UserPromptSubmit journaliser-prompt.sh, adapté du modèle suiviProjets : même format (horodatage ISO 8601, prompt, séparateur ---), sortie toujours en code 0. Le journal est écrit hors du projet, dans ~/.claude/capitalisation-ia/journaux/<identifiant-projet>/prompts.log (identifiant issu de la normalisation du remote), ce qui évite toute écriture dans l'arbre de travail et toute modification de .git/info/exclude. La racine projet vient de CLAUDE_PROJECT_DIR. Les sous-agents ne déclenchent pas cet événement, comme dans le modèle.
 * Journal : fichier en mode 600, dossier en mode 700 ; avertissement dans le README qu'il peut contenir des secrets collés dans un prompt ; rétention de 90 jours avec purge automatique des entrées plus anciennes au SessionStart.
-* Bibliothèque commune de scripts : normalisation du remote, contrôle du canal actif, coupe-circuit.
+* Bibliothèque commune de scripts : normalisation du remote, contrôle du canal actif, coupe-circuit. Chaque plugin qui l'utilise en embarque une copie identique, contrôlée par outils/verifier-coherence.sh.
 * Skills : conventions de commits et mention d'origine IA, rédaction Markdown.
 * Agent : explorateur-code générique en lecture seule (modèle de suiviProjets).
 
@@ -244,7 +244,7 @@ Chaque phase est relue dans un contexte isolé et validée explicitement avant d
 |---|---|---|
 | 0 : fondations | [01_planDeDemarrage_00_fondation.md](01_planDeDemarrage_00_fondation.md) | [01_rapportDeDemarrage_00_fondation.md](01_rapportDeDemarrage_00_fondation.md) |
 | 1 : socle | [01_planDeDemarrage_01_socle.md](01_planDeDemarrage_01_socle.md) | [01_rapportDeDemarrage_01_socle.md](01_rapportDeDemarrage_01_socle.md) |
-| 2 : règles projets | [01_planDeDemarrage_02_reglesProjets.md](01_planDeDemarrage_02_reglesProjets.md) | à venir |
+| 2 : règles projets | [01_planDeDemarrage_02_reglesProjets.md](01_planDeDemarrage_02_reglesProjets.md) | [01_rapportDeDemarrage_02_reglesProjets.md](01_rapportDeDemarrage_02_reglesProjets.md) |
 | 3 : stack Java Spring | [01_planDeDemarrage_03_stackJavaSpring.md](01_planDeDemarrage_03_stackJavaSpring.md) | à venir |
 | 4 : pilote | [01_planDeDemarrage_04_pilote.md](01_planDeDemarrage_04_pilote.md) | à venir |
 | 5 : stacks Angular et Rust | [01_planDeDemarrage_05_stacksAngularRust.md](01_planDeDemarrage_05_stacksAngularRust.md) | à venir |
