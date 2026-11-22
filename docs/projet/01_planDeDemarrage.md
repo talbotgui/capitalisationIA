@@ -56,7 +56,7 @@ capitalisationIA/
 ├── outils/
 │   ├── publier.sh                             logique de publication appelée par le workflow
 │   └── verifier-coherence.sh                  contrôles de cohérence des catalogues et plugins (CI)
-├── .claude/rules/collaboration.md             règles de collaboration avec Claude sur ce dépôt
+├── .claude/rules/                             règles de Claude sur ce dépôt (collaboration, développement des plugins)
 ├── docs/
 │   ├── produit/
 │   │   ├── mainteneur/                        documentation du mainteneur (accueil index.md et pages)

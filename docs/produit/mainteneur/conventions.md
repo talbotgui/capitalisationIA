@@ -19,6 +19,7 @@ Retour à l'[accueil de la documentation mainteneur](index.md).
 * Le catalogue stable n'est modifié que par le workflow de publication.
 * Le catalogue early access est déclaré sur les postes par son URL brute (https://raw.githubusercontent.com/talbotgui/capitalisationIA/main/canaux/early-access/.claude-plugin/marketplace.json), la CLI ne permettant pas de déclarer un catalogue situé hors de .claude-plugin/ à la racine d'un dépôt.
 * Scripts : Bash, fins de ligne LF (.gitattributes), bit exécutable positionné dans git, conformes à shellcheck.
+* Fin de développement d'un sujet : contrôles décrits dans la règle [pluginClaudeCode.md](../../../.claude/rules/pluginClaudeCode.md), dont l'enrichissement du CHANGELOG de chaque plugin modifié, indispensable à la publication.
 * Rédaction : français, mention d'origine IA en en-tête de fichier, un paragraphe par ligne, sommaire en tête des documents, aucun emoji.
 
 ## Ajout d'un plugin
