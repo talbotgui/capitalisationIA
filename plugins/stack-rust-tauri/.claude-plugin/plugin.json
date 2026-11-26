@@ -1,0 +1,17 @@
+{
+  "name": "stack-rust-tauri",
+  "description": "Stack Rust et Tauri : règles de développement, conception, sécurité, tests, Cargo et Tauri injectées à la première manipulation d'un fichier concerné.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": [
+    "rust",
+    "tauri",
+    "capitalisation-ia"
+  ],
+  "dependencies": [
+    "socle"
+  ]
+}

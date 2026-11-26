@@ -46,6 +46,26 @@
         "path": "plugins/stack-java-spring",
         "ref": "main"
       }
+    },
+    {
+      "name": "stack-ts-angular",
+      "description": "Stack TypeScript et Angular : règles injectées à la première manipulation d'un fichier concerné.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/stack-ts-angular",
+        "ref": "main"
+      }
+    },
+    {
+      "name": "stack-rust-tauri",
+      "description": "Stack Rust et Tauri : règles injectées à la première manipulation d'un fichier concerné.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/stack-rust-tauri",
+        "ref": "main"
+      }
     }
   ]
 }

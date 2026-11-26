@@ -89,6 +89,14 @@ Règles et formatage de la stack Java et Spring Boot ; nécessite socle, install
 * Formatage : après chaque modification d'un fichier .java d'un projet Maven ou Gradle, le fichier est formaté avec google-java-format s'il est installé sur le poste, sinon avec le plugin Spotless du projet s'il est configuré (hors ligne, wrapper mvnw ou gradlew du projet de préférence). Sans outil disponible, aucun effet. Rien n'est installé ni téléchargé.
 * Coupe-circuit : CAPIA_DESACTIVER=stack-java-spring.
 
+### stack-ts-angular
+
+Règles de la stack TypeScript et Angular ; nécessite socle, installé avec lui. À la première lecture ou modification, dans une session, d'un fichier concerné, Claude reçoit les règles correspondantes : TypeScript (.ts, .tsx), composants Angular (composants, templates, directives, pipes), conception (services, stores, routes, gardes, résolveurs, intercepteurs), sécurité, tests (*.spec.ts, *.test.ts, e2e/) et configuration (package.json, angular.json, tsconfig, ESLint). Rien n'est transmis sur un projet d'une autre stack ; les règles du projet prévalent. Pas encore de formatage automatique. Coupe-circuit : CAPIA_DESACTIVER=stack-ts-angular.
+
+### stack-rust-tauri
+
+Règles de la stack Rust et Tauri ; nécessite socle, installé avec lui. À la première lecture ou modification, dans une session, d'un fichier concerné, Claude reçoit les règles correspondantes : développement et tests (.rs), conception et sécurité (src/), Cargo (Cargo.toml, rust-toolchain.toml, deny.toml), commandes Tauri (src-tauri/src/) et configuration Tauri (tauri.conf.json, capacités). Rien n'est transmis sur un projet d'une autre stack ; les règles du projet prévalent. Pas encore de formatage automatique. Coupe-circuit : CAPIA_DESACTIVER=stack-rust-tauri.
+
 ### Demande de règles pour son projet
 
 Pour faire ajouter ou modifier les règles de son projet : ouvrir une issue sur talbotgui/capitalisationIA en indiquant le remote du projet et les règles souhaitées, sans aucune information confidentielle (le dépôt est public), ou proposer directement une PR selon la [documentation mainteneur](mainteneur/reglesProjets.md).
@@ -122,5 +130,5 @@ Exemple dans Git Bash : CAPIA_DESACTIVER=socle claude. Signaler ensuite l'incide
 
 Sections prévues par le plan, rédigées au fil des phases :
 
-* plugins stack-ts-angular et stack-rust ;
+* formatage automatique des stacks TypeScript, Angular et Rust ;
 * remontée d'incident.

@@ -11,6 +11,7 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider.
 * [Choix de conception](#choix-de-conception)
 * [Tests](#tests)
 * [Incident corrigé](#incident-corrigé)
+* [Enrichissement et nouvelles stacks](#enrichissement-et-nouvelles-stacks)
 * [Critères de sortie](#critères-de-sortie)
 * [Reste à faire](#reste-à-faire)
 
@@ -79,6 +80,19 @@ Les skills avec paths ne permettent pas de charger les règles de langage au plu
 
 Le test de bascule de canal a échoué dès l'ajout de stack-java-spring : /temoin:canal désactivait les plugins par ordre alphabétique et la CLI refuse de désactiver socle tant que stack-java-spring, qui en dépend, est actif. Correction dans temoin 0.3.1 : désactivations et réactivations relancées tant qu'elles progressent, réactivations avant installations ; test ajouté (bascule early, stable, early avec plugins dépendants). Les postes ne sont pas touchés tant que stack-java-spring n'est pas fusionné, mais temoin 0.3.1 doit être publié en stable avant ou avec la première version de stack-java-spring.
 
+## Enrichissement et nouvelles stacks
+
+À la demande du mainteneur (26/11/2026), avant fusion :
+
+* Source : dépôt [affaan-m/ecc](https://github.com/affaan-m/ecc), dossier rules/ (java, typescript, angular, rust), licence MIT ; règles traduites, condensées, sans exemple de code, et adaptées au principe « les règles du projet prévalent ». Notice de licence NOTICE.md dans chaque plugin de stack. Les fichiers hooks.md de ecc (configuration de hooks) ne sont pas repris : le formatage est porté par les hooks des plugins.
+* stack-java-spring enrichi : règle securite.md ajoutée (secrets, SQL paramétré, validation, authentification, erreurs génériques, audit des dépendances) ; developpement, conception et tests complétés (fonctionnalités modernes de Java, ordre des membres, copies défensives, streams, dépôt derrière une interface, builder et types sealed, organisation et nommage des tests, couverture).
+* stack-ts-angular (nouveau, 0.1.0) : typescript, angular-composants, angular-conception, angular-securite, tests, configuration.
+* stack-rust-tauri (nouveau, 0.1.0) : developpement, conception, securite, tests, cargo (d'après ecc) ; tauri-commandes et tauri-configuration rédigées d'après les conventions de Tauri 2, ecc ne contenant aucune règle Tauri. Nom retenu à la place de stack-rust pour couvrir Tauri ; plan amendé.
+* Les deux nouveaux plugins ne portent que l'injection de règles ; le formatage automatique reste au programme de la [phase 5](01_planDeDemarrage_05_stacksAngularRust.md#contenu).
+* Moteur : les commentaires HTML d'une ligne (mentions d'origine) ne sont plus injectés.
+* Volume : environ 7 700 caractères de règles par stack, soit de l'ordre de 2 000 tokens si toutes les règles d'une stack sont injectées dans une même session ; chaque règle n'est transmise qu'à la première manipulation d'un fichier concerné.
+* Tests : 83 tests bats verts, dont un tableau de correspondance fichiers et règles pour les trois stacks.
+
 ## Critères de sortie
 
 | Critère | État |
@@ -91,6 +105,6 @@ Le test de bascule de canal a échoué dès l'ajout de stack-java-spring : /temo
 ## Reste à faire
 
 1. Fusionner la branche claude/keen-allen-agvylk sur main (phases 2 et 3).
-2. Publier temoin 0.3.1, puis socle 1.1.0, regles-projets 0.1.0 et stack-java-spring 0.1.0.
-3. Sur le poste du mainteneur (Git Bash) : /temoin:canal early puis stable ; sur un projet Java réel, vérifier les règles reçues (« quelles règles java as-tu reçues ? ») et le formatage par l'outil du projet ; vérifier l'absence d'effet sur un projet non Java.
+2. Publier temoin 0.3.1, puis socle 1.1.0, regles-projets 0.1.0, stack-java-spring 0.1.0, stack-ts-angular 0.1.0 et stack-rust-tauri 0.1.0.
+3. Sur le poste du mainteneur (Git Bash) : /temoin:canal early puis stable ; sur un projet Java réel, vérifier les règles reçues (« quelles règles java as-tu reçues ? ») et le formatage par l'outil du projet ; vérifier l'absence d'effet sur un projet non Java ; sur suiviProjets, vérifier les règles TypeScript, Angular, Rust et Tauri reçues.
 4. Compléter ce rapport et clore la phase.

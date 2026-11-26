@@ -54,7 +54,7 @@ capitalisationIA/
 │   │   └── CHANGELOG.md
 │   ├── stack-java-spring/
 │   ├── stack-ts-angular/
-│   └── stack-rust/
+│   └── stack-rust-tauri/
 ├── outils/
 │   ├── publier.sh                             logique de publication appelée par le workflow
 │   └── verifier-coherence.sh                  contrôles de cohérence des catalogues et plugins (CI)
@@ -173,6 +173,7 @@ Le mécanisme paths des fichiers .claude/rules (chargement d'une règle selon le
 * Règles de développement, conception et tests du langage, un fichier regles/<thème>.md par thème avec en-tête paths (ex. conception sur **/src/main/java/**/*.java, tests sur **/src/test/**/*.java, maven sur **/pom.xml ; **/*.ts, angular.json ; **/*.rs, Cargo.toml), injecté par le hook PreToolUse du plugin ; contenu court et actionnable. outils/verifier-coherence.sh contrôle la présence de l'en-tête.
 * Hook PostToolUse de formatage et d'analyse sur le modèle de formater-et-analyser.sh de suiviProjets, qui sort immédiatement si l'extension du fichier ou le marqueur de stack ne correspond pas.
 * Contraintes de performance du hook PostToolUse : timeout explicite déclaré dans hooks.json, traitement du seul fichier modifié, utilisation exclusive des outils déjà présents dans le projet ou sur le poste (aucune installation), sortie silencieuse si l'outil est absent.
+* Sources des règles : règles de affaan-m/ecc (dossier rules/, licence MIT) adaptées en français et condensées, sans exemple de code pour limiter le contexte ; notice de licence NOTICE.md dans chaque plugin qui en reprend. Règles Tauri rédigées d'après les conventions de Tauri 2, ecc n'en contenant pas.
 * Pas de serveur MCP dans les plugins de stack ; un MCP éventuel fera l'objet d'un plugin séparé.
 
 ### Règles communes à tous les hooks

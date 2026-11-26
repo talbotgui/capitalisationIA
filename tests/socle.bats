@@ -148,6 +148,8 @@ sur deux lignes")"
   printf -- '---\ndescription: x\npaths:\n  - "**/*.java"\n  - pom.xml\nautre: y\n---\ncorps\n' > "$BATS_TEST_TMPDIR/r2.md"
   [ "$(capia_motifs_regle "$BATS_TEST_TMPDIR/r2.md" | paste -sd'|')" = '**/*.java|pom.xml' ]
   [ "$(capia_corps_regle "$BATS_TEST_TMPDIR/r2.md")" = "corps" ]
+  printf -- '---\npaths: "*.x"\n---\n<!-- Mention d origine. -->\n\n* règle\n  <!-- autre -->\n* <!-- non retiré --> suite\n' > "$BATS_TEST_TMPDIR/r4.md"
+  [ "$(capia_corps_regle "$BATS_TEST_TMPDIR/r4.md")" = "$(printf '* règle\n* <!-- non retiré --> suite')" ]
   printf '# Sans en-tête\n' > "$BATS_TEST_TMPDIR/r3.md"
   [ -z "$(capia_motifs_regle "$BATS_TEST_TMPDIR/r3.md")" ]
 }

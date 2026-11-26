@@ -1,0 +1,17 @@
+{
+  "name": "stack-ts-angular",
+  "description": "Stack TypeScript et Angular : règles de développement, conception, sécurité et tests injectées à la première manipulation d'un fichier concerné.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": [
+    "typescript",
+    "angular",
+    "capitalisation-ia"
+  ],
+  "dependencies": [
+    "socle"
+  ]
+}

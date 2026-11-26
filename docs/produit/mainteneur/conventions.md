@@ -63,5 +63,7 @@ paths:
 * Forme courte acceptée : paths: "**/pom.xml, **/build.gradle". Motifs relatifs à la racine du projet : ** (dossiers quelconques, y compris aucun), * et ? (hors /), {a,b} (alternative).
 * Seul le corps du fichier (sans l'en-tête) est injecté, une fois par règle et par session ; l'état est écrit sous ~/.claude/capitalisation-ia/sessions/<session>/, remis à zéro par socle après /clear ou compactage et purgé après 7 jours.
 * Contenu court : chaque règle injectée consomme du contexte ; viser une dizaine de puces au plus par fichier.
+* Les commentaires HTML d'une ligne (mention d'origine, source) ne sont pas injectés.
+* Règle reprise d'une source tierce : citer la source dans le commentaire d'origine du fichier et joindre au plugin un NOTICE.md reproduisant la licence de la source (cas de affaan-m/ecc, licence MIT).
 * outils/verifier-coherence.sh refuse un fichier regles/*.md sans en-tête paths.
 * Un hook ne bloque jamais un outil : sortie toujours en code 0, sans décision de permission.

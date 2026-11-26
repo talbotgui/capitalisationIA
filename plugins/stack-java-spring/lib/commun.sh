@@ -12,7 +12,7 @@
 #   capia_chemin_unix CHEMIN       chemin à séparateurs / (cygpath -u sous Git Bash, sinon \ remplacés par /)
 #   capia_glob_vers_regex GLOB     expression régulière étendue équivalente à un motif de chemin (syntaxe .claude/rules)
 #   capia_motifs_regle FICHIER     motifs de l'en-tête paths d'un fichier de règle, un par ligne
-#   capia_corps_regle FICHIER      contenu d'un fichier de règle sans son en-tête
+#   capia_corps_regle FICHIER      contenu d'un fichier de règle sans en-tête ni commentaires HTML d'une ligne
 #   capia_injecter_regles PLUGIN DOSSIER [PREFIXE]
 #                                  moteur du hook PreToolUse : lit l'événement sur l'entrée standard et produit le
 #                                  contexte additionnel des règles de DOSSIER dont un motif correspond au fichier
@@ -166,9 +166,15 @@ capia_motifs_regle() {
   ' "$1"
 }
 
-# Corps d'un fichier de règle, sans son en-tête.
+# Corps d'un fichier de règle, sans son en-tête ni ses lignes de commentaire HTML (mention d'origine, licence),
+# qui consommeraient du contexte sans servir à Claude.
 capia_corps_regle() {
-  awk 'NR == 1 && $0 == "---" { entete = 1; next } entete && /^---[[:space:]]*$/ { entete = 0; next } !entete' "$1"
+  awk '
+    NR == 1 && $0 == "---" { entete = 1; next }
+    entete && /^---[[:space:]]*$/ { entete = 0; next }
+    entete || /^[[:space:]]*<!--.*-->[[:space:]]*$/ { next }
+    { if (NF || imprime) { print; imprime = 1 } }
+  ' "$1"
 }
 
 capia_injecter_regles() {

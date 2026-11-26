@@ -4,7 +4,7 @@ Document généré avec l'assistance de l'IA (Claude).
 
 ## 1.1.0
 
-* Bibliothèque commune : moteur d'injection des règles par motif de fichier, utilisé par les plugins de stack et regles-projets.
+* Bibliothèque commune : moteur d'injection des règles par motif de fichier, utilisé par les plugins de stack et regles-projets ; les commentaires HTML d'une ligne (mentions d'origine) ne sont pas transmis à Claude.
 * Après un /clear ou un compactage, les règles déjà transmises dans la session le sont de nouveau au besoin.
 * Purge au démarrage des états de session de plus de 7 jours.
 
