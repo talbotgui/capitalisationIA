@@ -1,19 +1,16 @@
 ---
 paths:
-  - "**/*.service.ts"
-  - "**/*.store.ts"
-  - "**/*.routes.ts"
-  - "**/*.guard.ts"
-  - "**/*.resolver.ts"
-  - "**/*.interceptor.ts"
-  - "**/app.config.ts"
+  - "**/src/app/**/*.ts"
+  - "**/projects/*/src/**/*.ts"
+  - "**/*.component.ts"
 ---
-<!-- Fichier généré avec l'assistance de l'IA (Claude), adapté de affaan-m/ecc (rules/typescript et rules/angular, licence MIT, voir NOTICE.md). -->
+<!-- Fichier généré avec l'assistance de l'IA (Claude), d'après la documentation officielle d'Angular (angular.dev, CC BY 4.0) et affaan-m/ecc (rules/angular, MIT) ; voir NOTICE.md. -->
 
-* Les services portent l'accès aux données et la logique métier ; les composants délèguent. Services singletons (providedIn: 'root') sauf besoin d'une portée de composant ou de route (providers).
-* Données asynchrones : resource() ou toSignal pour un chargement simple selon la version, RxJS pour les flux complexes ; toute souscription manuelle terminée par takeUntilDestroyed.
-* Opérateurs RxJS choisis selon l'intention : switchMap (recherche, navigation), mergeMap (requêtes indépendantes), exhaustMap (soumission de formulaire) ; erreurs toujours traitées par catchError, jamais de flux qui s'arrête silencieusement.
-* Routage : modules de fonctionnalité chargés à la demande (loadChildren, loadComponent) ; gardes et résolveurs fonctionnels (CanActivateFn, ResolveFn) ; canMatch plutôt que canActivate quand la route ne doit pas être chargée sans autorisation.
-* Intercepteurs HTTP fonctionnels (HttpInterceptorFn) pour authentification, erreurs et nouvelles tentatives, déclarés dans provideHttpClient(withInterceptors(...)).
+* Services à responsabilité unique, portant l'accès aux données et la logique métier ; les composants délèguent.
+* Injection par la fonction inject() plutôt que par paramètres de constructeur (guide de style officiel) ; InjectionToken pour les dépendances qui ne sont pas des classes ; portée de composant ou de route (providers) seulement si le service ne doit pas être un singleton.
+* Nouveau service singleton : décorateur @Service à partir de la v22, @Injectable({ providedIn: 'root' }) avant.
+* Données asynchrones : resource() ou toSignal pour un chargement simple selon la version, RxJS pour les flux complexes ; souscription manuelle terminée par takeUntilDestroyed.
+* Opérateurs RxJS choisis selon l'intention : switchMap (recherche, navigation), mergeMap (requêtes indépendantes), exhaustMap (soumission) ; erreurs toujours traitées par catchError.
+* Routage : routes de fonctionnalité chargées à la demande (loadChildren, loadComponent) ; gardes, résolveurs et intercepteurs fonctionnels (CanActivateFn, ResolveFn, HttpInterceptorFn) ; canMatch quand la route ne doit pas être chargée sans autorisation.
+* Transformations d'état pures et prévisibles ; règles de validation et transformations de données dans des fonctions ou classes dédiées, testables sans composant.
 * Rendu côté serveur : jamais d'accès direct à window, document ou localStorage ; passer par isPlatformBrowser ou le jeton DOCUMENT.
-* Accessibilité : composants accessibles du CDK Angular plutôt qu'une gestion manuelle des attributs ARIA.

@@ -42,16 +42,18 @@ verifier() {
   verifier stack-java-spring src/app/a.ts ""
 }
 
-@test "ts-angular : correspondance des fichiers et des règles" {
-  verifier stack-ts-angular src/app/user/user-card.component.ts "angular-composants angular-securite typescript"
-  verifier stack-ts-angular src/app/user/user-card.component.html "angular-composants angular-securite"
-  verifier stack-ts-angular src/app/user/user.service.ts "angular-conception angular-securite typescript"
-  verifier stack-ts-angular src/app/app.routes.ts "angular-conception typescript"
-  verifier stack-ts-angular src/app/auth.interceptor.ts "angular-conception angular-securite typescript"
+@test "ts-angular : correspondance des fichiers et des règles (conventions avec et sans suffixe)" {
+  local A="angular-composants angular-conception angular-securite"
+  verifier stack-ts-angular src/app/user/user-card.component.ts "$A typescript"
+  verifier stack-ts-angular src/app/user-profile/user-profile.ts "$A typescript"
+  verifier stack-ts-angular src/app/user-profile/user-profile.html "angular-composants angular-securite"
+  verifier stack-ts-angular src/app/user-profile/user-profile.spec.ts "$A tests typescript"
+  verifier stack-ts-angular projects/ma-lib/src/lib/bouton.ts "$A typescript"
+  verifier stack-ts-angular legacy/user-card.component.html "angular-composants angular-securite"
   verifier stack-ts-angular src/environments/environment.ts "angular-securite typescript"
-  verifier stack-ts-angular src/app/user/user.service.spec.ts "tests typescript"
+  verifier stack-ts-angular src/server.ts "angular-securite typescript"
   verifier stack-ts-angular e2e/parcours.ts "tests typescript"
-  verifier stack-ts-angular src/app/utils.ts "typescript"
+  verifier stack-ts-angular outils/generer.ts "typescript"
   verifier stack-ts-angular package.json "configuration"
   verifier stack-ts-angular tsconfig.app.json "configuration"
   verifier stack-ts-angular src/main/java/A.java ""

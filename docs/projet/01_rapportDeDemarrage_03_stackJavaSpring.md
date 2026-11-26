@@ -86,11 +86,16 @@ Le test de bascule de canal a échoué dès l'ajout de stack-java-spring : /temo
 
 * Source : dépôt [affaan-m/ecc](https://github.com/affaan-m/ecc), dossier rules/ (java, typescript, angular, rust), licence MIT ; règles traduites, condensées, sans exemple de code, et adaptées au principe « les règles du projet prévalent ». Notice de licence NOTICE.md dans chaque plugin de stack. Les fichiers hooks.md de ecc (configuration de hooks) ne sont pas repris : le formatage est porté par les hooks des plugins.
 * stack-java-spring enrichi : règle securite.md ajoutée (secrets, SQL paramétré, validation, authentification, erreurs génériques, audit des dépendances) ; developpement, conception et tests complétés (fonctionnalités modernes de Java, ordre des membres, copies défensives, streams, dépôt derrière une interface, builder et types sealed, organisation et nommage des tests, couverture).
-* stack-ts-angular (nouveau, 0.1.0) : typescript, angular-composants, angular-conception, angular-securite, tests, configuration.
+* stack-ts-angular (nouveau, 0.1.0) : typescript, angular-composants, angular-conception, angular-securite, tests, configuration. Règles Angular alignées ensuite sur la documentation officielle (sources de angular.dev dans le dépôt angular/angular, état du 25/11/2026, Angular v22 ; site angular.dev non joignable depuis l'environnement de développement), qui prévaut sur ecc en cas d'écart :
+  * guide de style : fichiers sans suffixe (user-profile.ts) depuis la v20, organisation par fonctionnalité, inject(), protected et readonly, objet host au lieu de @HostBinding, class et style au lieu de ngClass et ngStyle ; les motifs des règles couvrent donc src/app et projects/*/src quelle que soit la convention de nommage, au lieu des seuls suffixes .component et .service de ecc ;
+  * bonnes pratiques pour l'IA : standalone et OnPush implicites (v20 et v22), @Service en v22, Signal Forms stables en v22, pas de CommonModule, NgOptimizedImage, AXE et WCAG AA ;
+  * sécurité : AOT, API « Security Risk », DomSanitizer.sanitize, CSP à nonce ou autoCsp, Trusted Types, XSRF de HttpClient, SSRF et trustProxyHeaders en rendu serveur ;
+  * tests : Vitest et jsdom par défaut, providersFile, mode navigateur.
+  * Licence : documentation CC BY 4.0 (attribution et mention des modifications dans NOTICE.md).
 * stack-rust-tauri (nouveau, 0.1.0) : developpement, conception, securite, tests, cargo (d'après ecc) ; tauri-commandes et tauri-configuration rédigées d'après les conventions de Tauri 2, ecc ne contenant aucune règle Tauri. Nom retenu à la place de stack-rust pour couvrir Tauri ; plan amendé.
 * Les deux nouveaux plugins ne portent que l'injection de règles ; le formatage automatique reste au programme de la [phase 5](01_planDeDemarrage_05_stacksAngularRust.md#contenu).
 * Moteur : les commentaires HTML d'une ligne (mentions d'origine) ne sont plus injectés.
-* Volume : environ 7 700 caractères de règles par stack, soit de l'ordre de 2 000 tokens si toutes les règles d'une stack sont injectées dans une même session ; chaque règle n'est transmise qu'à la première manipulation d'un fichier concerné.
+* Volume : environ 7 700 caractères de règles pour Java et Rust, 10 300 pour TypeScript et Angular, soit de l'ordre de 2 000 à 2 600 tokens si toutes les règles d'une stack sont injectées dans une même session ; chaque règle n'est transmise qu'à la première manipulation d'un fichier concerné.
 * Tests : 83 tests bats verts, dont un tableau de correspondance fichiers et règles pour les trois stacks.
 
 ## Critères de sortie

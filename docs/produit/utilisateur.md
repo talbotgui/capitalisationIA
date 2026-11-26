@@ -91,7 +91,7 @@ Règles et formatage de la stack Java et Spring Boot ; nécessite socle, install
 
 ### stack-ts-angular
 
-Règles de la stack TypeScript et Angular ; nécessite socle, installé avec lui. À la première lecture ou modification, dans une session, d'un fichier concerné, Claude reçoit les règles correspondantes : TypeScript (.ts, .tsx), composants Angular (composants, templates, directives, pipes), conception (services, stores, routes, gardes, résolveurs, intercepteurs), sécurité, tests (*.spec.ts, *.test.ts, e2e/) et configuration (package.json, angular.json, tsconfig, ESLint). Rien n'est transmis sur un projet d'une autre stack ; les règles du projet prévalent. Pas encore de formatage automatique. Coupe-circuit : CAPIA_DESACTIVER=stack-ts-angular.
+Règles de la stack TypeScript et Angular ; nécessite socle, installé avec lui. À la première lecture ou modification, dans une session, d'un fichier concerné, Claude reçoit les règles correspondantes : TypeScript (.ts, .tsx), composants, conception et sécurité Angular (fichiers de src/app, avec ou sans suffixes .component, .service), règles tenant compte de la version d'Angular du projet, tests (*.spec.ts, *.test.ts, e2e/) et configuration (package.json, angular.json, tsconfig, ESLint). Rien n'est transmis sur un projet d'une autre stack ; les règles du projet prévalent. Pas encore de formatage automatique. Coupe-circuit : CAPIA_DESACTIVER=stack-ts-angular.
 
 ### stack-rust-tauri
 

@@ -25,3 +25,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Documentation officielle d'Angular
+
+Les règles Angular de ce plugin sont en partie adaptées (traduction, condensation, réorganisation) de la documentation officielle d'Angular (https://angular.dev, sources : https://github.com/angular/angular, dossiers adev/src/content et adev/src/context), consultée le 26/11/2026 : guide de style, bonnes pratiques pour le développement avec l'IA, sécurité, tests unitaires. Cette documentation est publiée sous licence Creative Commons Attribution 4.0 International (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/) ; les exemples de code d'Angular sont sous licence MIT, Copyright (c) 2010-2026 Google LLC. Les textes ont été modifiés : ils ne sont pas une reproduction de la documentation et n'engagent pas l'équipe Angular.
