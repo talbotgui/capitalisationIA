@@ -46,6 +46,21 @@ etat() {
   [ "$(etat temoin@capitalisation-ia-early)" = "inactif" ]
 }
 
+@test "bascule early, stable puis early : plugins dépendants désactivés et réactivés dans l'ordre" {
+  run "$SCRIPT" early
+  [ "$status" -eq 0 ]
+  [ "$(etat stack-java-spring@capitalisation-ia-early)" = "actif" ]
+  run "$SCRIPT" stable
+  [ "$status" -eq 0 ]
+  [ "$(etat socle@capitalisation-ia-early)" = "inactif" ]
+  [ "$(etat stack-java-spring@capitalisation-ia-early)" = "inactif" ]
+  run "$SCRIPT" early
+  [ "$status" -eq 0 ]
+  [ "$(etat socle@capitalisation-ia-early)" = "actif" ]
+  [ "$(etat stack-java-spring@capitalisation-ia-early)" = "actif" ]
+  [ "$(etat temoin@capitalisation-ia)" = "inactif" ]
+}
+
 @test "conserve le reste de settings.json et en fait une sauvegarde" {
   mkdir -p "$CLAUDE_CONFIG_DIR"
   echo '{"theme":"dark"}' > "$CLAUDE_CONFIG_DIR/settings.json"

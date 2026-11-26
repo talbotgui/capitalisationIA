@@ -43,6 +43,28 @@ version_suffisante() {
   [ "$(printf '%s\n%s\n' "$1" "$2" | sort -t. -k1,1n -k2,2n -k3,3n | head -n 1)" = "$2" ]
 }
 
+# Applique « claude plugin $1 <id> --scope user » à chaque identifiant passé ensuite, en relançant les échecs
+# tant qu'un passage fait progresser : l'ordre imposé par les dépendances entre plugins est ainsi respecté
+# (un plugin requis par un autre ne se désactive qu'après lui, et ne se réactive qu'avant lui).
+appliquer_dans_l_ordre() {
+  local action="$1" restants progres id echecs
+  shift
+  restants=("$@")
+  while [ "${#restants[@]}" -gt 0 ]; do
+    progres=0
+    echecs=()
+    for id in "${restants[@]}"; do
+      if claude plugin "$action" "$id" --scope user; then
+        progres=1
+      else
+        echecs+=("$id")
+      fi
+    done
+    [ "$progres" -eq 1 ] || erreur "impossible d'appliquer « $action » à : ${echecs[*]}."
+    restants=("${echecs[@]}")
+  done
+}
+
 marketplace_connu() {
   claude plugin marketplace list --json | jq -e --arg m "$1" 'any(.[]; .name == $m)' >/dev/null
 }
@@ -96,10 +118,12 @@ mv "$tmp" "$SETTINGS"
 installes="$(claude plugin list --json)"
 
 # 4. Désactivation de l'autre canal
+a_desactiver=()
 for id in $(jq -r --arg m "$autre" '.[] | select(.scope == "user" and .enabled and (.id | endswith("@" + $m))) | .id' <<<"$installes"); do
   etape "Désactivation de $id (autre canal)"
-  claude plugin disable "$id" --scope user
+  a_desactiver+=("$id")
 done
+[ "${#a_desactiver[@]}" -eq 0 ] || appliquer_dans_l_ordre disable "${a_desactiver[@]}"
 
 # 5. Plugins du canal choisi
 disponibles="$(claude plugin list --available --json)"
@@ -109,19 +133,28 @@ plugins="$(jq -r --arg m "$marketplace" '
   | unique | .[]' <<<"$disponibles")"
 [ -n "$plugins" ] || echo "Aucun plugin publié dans le canal $canal pour le moment."
 
+a_reactiver=()
+a_installer=()
 for nom in $plugins; do
   id="$nom@$marketplace"
   etat="$(jq -r --arg id "$id" '[.[] | select(.id == $id and .scope == "user")][0] | if . == null then "absent" elif .enabled then "actif" else "inactif" end' <<<"$installes")"
   case "$etat" in
     absent)
-      etape "Installation de $id"
-      claude plugin install "$id" --scope user ;;
+      a_installer+=("$id") ;;
     inactif)
-      etape "Réactivation de $id"
-      claude plugin enable "$id" --scope user ;;
+      a_reactiver+=("$id") ;;
     actif)
       etape "$id déjà installé et actif" ;;
   esac
+done
+# Réactivations d'abord, pour qu'un plugin installé ensuite trouve ses dépendances actives.
+for id in "${a_reactiver[@]}"; do
+  etape "Réactivation de $id"
+done
+[ "${#a_reactiver[@]}" -eq 0 ] || appliquer_dans_l_ordre enable "${a_reactiver[@]}"
+for id in "${a_installer[@]}"; do
+  etape "Installation de $id"
+  claude plugin install "$id" --scope user
 done
 
 echo

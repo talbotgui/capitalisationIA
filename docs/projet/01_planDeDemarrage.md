@@ -30,10 +30,10 @@ Industrialiser la configuration de Claude Code sur une cinquantaine de projets h
 * Deux marketplaces dès le départ : capitalisation-ia (stable) et capitalisation-ia-early (early access).
 * Stacks pilotes : Stack1 Java + Spring Boot, Stack2 TypeScript + Angular, Stack3 Rust.
 * Traçabilité : hook UserPromptSubmit sur le modèle de talbotgui/suiviProjets/.claude/hooks/journaliser-prompt.sh (pas de hook SessionEnd pour ce besoin), journal stocké hors des projets.
-* Pas de garde-fous via des hooks PreToolUse.
+* Pas de garde-fous via des hooks PreToolUse : un hook PreToolUse ne bloque jamais un outil. Seule exception admise (décision du 26/11/2026) : l'injection non bloquante de contexte (règles par motif de fichier).
 * Distribution par plugin (portée user) : commandes natives /plugin, puis skill /temoin:canal pour le choix du canal ; pas de managed settings à ce stade.
 * Règles propres à chaque projet hors des dépôts de code : plugin unique regles-projets qui identifie le projet par son remote git ; les règles sont stockées dans ce dépôt (cadence de publication à surveiller).
-* Règles organisées en trois niveaux chargés au plus juste pour limiter la consommation de tokens : commun (socle), langage ou stack (skills avec paths des plugins de stack), projet (index court et dérogations dans regles-projets). Voir [Organisation des règles](#organisation-des-règles).
+* Règles organisées en trois niveaux chargés au plus juste pour limiter la consommation de tokens : commun (socle), langage ou stack (règles des plugins de stack injectées par motif de fichier), projet (index court et dérogations dans regles-projets). Voir [Organisation des règles](#organisation-des-règles).
 * Environnement des postes : exclusivement Git Bash, jq installé.
 * Publication stable par un workflow GitHub Actions à déclenchement manuel.
 * Conventions de rédaction reprises de suiviProjets : français, mention d'origine IA en en-tête de fichier, un paragraphe par ligne, sommaire en tête des documents, aucun emoji.
@@ -111,7 +111,7 @@ La fonction est couverte par des tests bats sur l'ensemble de ces formes.
 
 * Semver par plugin, tags <plugin>--v<version> (convention de Claude Code). La commande claude plugin tag n'est pas utilisée car elle exige une version dans plugin.json ; les tags sont créés par outils/publier.sh.
 * Un CHANGELOG.md par plugin.
-* Version minimale de Claude Code requise documentée dans le README, vérifiée par la skill /temoin:canal et épinglée dans la CI (les fonctionnalités paths des skills, dependencies et git-subdir sont récentes).
+* Version minimale de Claude Code requise documentée dans le README, vérifiée par la skill /temoin:canal et épinglée dans la CI (les fonctionnalités dependencies, git-subdir et additionalContext des hooks PreToolUse sont récentes).
 
 Publication par le workflow .github/workflows/publication.yml, déclenchement manuel (workflow_dispatch) avec deux entrées : plugin et version. Étapes :
 
@@ -128,18 +128,19 @@ Renommage ou retrait d'un plugin : table renames des deux catalogues, displayNam
 
 ## Organisation des règles
 
-Le mécanisme paths des fichiers .claude/rules (chargement d'une règle selon le motif du fichier travaillé) n'est pas disponible pour un plugin : il suppose des fichiers dans le projet, exclus par l'objectif, ou dans ~/.claude/rules, communs à tous les projets du poste. Les règles sont donc réparties en trois niveaux, chacun chargé au moment utile :
+Le mécanisme paths des fichiers .claude/rules (chargement d'une règle selon le motif du fichier travaillé) n'est pas disponible pour un plugin : il suppose des fichiers dans le projet, exclus par l'objectif, ou dans ~/.claude/rules, communs à tous les projets du poste. Les skills de plugin ne le remplacent pas : le prototype de début de phase 3 a montré que leur champ paths n'a aucun effet mesurable et que leur activation reste à la discrétion du modèle (voir le [rapport de la phase 3](01_rapportDeDemarrage_03_stackJavaSpring.md#prototype-de-chargement-des-règles-de-langage)). Le marketplace reproduit donc ce mécanisme par un hook, et répartit les règles en trois niveaux, chacun chargé au moment utile :
 
 | Niveau | Contenu | Porté par | Chargement |
 |---|---|---|---|
 | Commun | conventions de commits, rédaction, journal | socle | skills chargées à la demande |
-| Langage ou stack | développement, conception, tests propres à un langage ou un framework | plugins de stack | skills avec paths, une par thème ; seule la description reste en contexte |
-| Projet | écarts et spécificités du projet uniquement | regles-projets | index court injecté au démarrage et après compactage |
+| Langage ou stack | développement, conception, tests propres à un langage ou un framework | plugins de stack | fichiers regles/*.md à en-tête paths, injectés par hook à la première manipulation d'un fichier correspondant ; rien sur les autres stacks |
+| Projet | écarts et spécificités du projet uniquement | regles-projets | index court injecté au démarrage et après compactage ; fichiers à en-tête paths injectés par motif comme les règles de stack |
 
 * Une règle de langage n'est rédigée qu'une fois, dans le plugin de stack, et partagée par tous les projets de cette stack ; elle n'est jamais recopiée dans les règles d'un projet.
-* L'index d'un projet indique sa stack, renvoie aux skills du plugin de stack et liste les seules dérogations (par exemple « stack Java Spring ; exception : JUnit 4 »). Cible : quelques lignes, quelques centaines de tokens au plus.
-* Les descriptions des skills de stack sont précises (langage, thème, fichiers concernés), car c'est Claude qui décide de leur activation.
-* Règles de projet volumineuses nécessitant un filtrage par chemin : hook injectant une règle à la première manipulation d'un fichier correspondant (en-tête paths dans le fichier de règle, une injection par session), à arbitrer si le besoin est constaté (voir [Points ouverts](#points-ouverts)).
+* L'index d'un projet indique sa stack, renvoie au plugin de stack et liste les seules dérogations (par exemple « stack Java Spring ; exception : JUnit 4 »). Cible : quelques lignes, quelques centaines de tokens au plus.
+* Mécanisme d'injection (moteur capia_injecter_regles de la bibliothèque commune) : hook PreToolUse non bloquant sur Read, Edit, MultiEdit et Write ; chaque fichier de règle porte un en-tête paths (syntaxe des .claude/rules : chaîne à virgules ou liste, motifs **, *, ?, {a,b} relatifs à la racine du projet) ; une règle est injectée une seule fois par session (état sous ~/.claude/capitalisation-ia/sessions/, remis à zéro après /clear ou compactage par socle, purgé après 7 jours).
+* Le contexte injecté accompagne le résultat de l'outil : sur une lecture, la règle arrive avant toute modification ; sur la création directe d'un fichier (Write sans lecture préalable), elle arrive après la première écriture.
+* Chaque injection rappelle que le CLAUDE.md, les règles versionnées du projet et les règles de regles-projets prévalent.
 
 ## Plugins prévus
 
@@ -153,28 +154,30 @@ Le mécanisme paths des fichiers .claude/rules (chargement d'une règle selon le
 
 * Hook UserPromptSubmit journaliser-prompt.sh, adapté du modèle suiviProjets : même format (horodatage ISO 8601, prompt, séparateur ---), sortie toujours en code 0. Le journal est écrit hors du projet, dans ~/.claude/capitalisation-ia/journaux/<identifiant-projet>/prompts.log (identifiant issu de la normalisation du remote), ce qui évite toute écriture dans l'arbre de travail et toute modification de .git/info/exclude. La racine projet vient de CLAUDE_PROJECT_DIR. Les sous-agents ne déclenchent pas cet événement, comme dans le modèle.
 * Journal : fichier en mode 600, dossier en mode 700 ; avertissement dans le README qu'il peut contenir des secrets collés dans un prompt ; rétention de 90 jours avec purge automatique des entrées plus anciennes au SessionStart.
-* Bibliothèque commune de scripts : normalisation du remote, contrôle du canal actif, coupe-circuit. Chaque plugin qui l'utilise en embarque une copie identique, contrôlée par outils/verifier-coherence.sh.
+* Bibliothèque commune de scripts : normalisation du remote, contrôle du canal actif, coupe-circuit, moteur d'injection des règles par motif de fichier. Chaque plugin qui l'utilise en embarque une copie identique, contrôlée par outils/verifier-coherence.sh.
+* Hook SessionStart (clear, compact) : remise à zéro de l'état des règles injectées de la session.
 * Skills : conventions de commits et mention d'origine IA, rédaction Markdown.
 * Agent : explorateur-code générique en lecture seule (modèle de suiviProjets).
 
 ### regles-projets
 
-* Hook SessionStart (matcher startup|resume|clear|compact) : normalise remote.origin.url, cherche le projet dans projets/mapping.json, injecte index.md et la liste des fichiers de règles ; aucun effet sur un projet inconnu.
-* index.md court : stack du projet, renvoi aux skills du plugin de stack, dérogations ; aucune règle de langage (voir [Organisation des règles](#organisation-des-règles)).
+* Hook SessionStart (matcher startup|resume|clear|compact) : normalise remote.origin.url, cherche le projet dans projets/mapping.json, injecte index.md et la liste des fichiers de règles sans en-tête paths ; aucun effet sur un projet inconnu.
+* Hook PreToolUse non bloquant : fichiers de règles du projet à en-tête paths injectés par motif (voir [Organisation des règles](#organisation-des-règles)).
+* index.md court : stack du projet, renvoi au plugin de stack, dérogations ; aucune règle de langage (voir [Organisation des règles](#organisation-des-règles)).
 * Modèle de dossier projet : index.md, et fichiers thématiques (nommage.md, conception.md, securite.md, tests.md) réservés aux spécificités du projet.
 * Le dépôt étant public, les règles des projets sont visibles de tous : aucune information confidentielle ne doit y figurer (contrôlé en revue de PR).
 
 ### Plugins de stack
 
 * Dépendance au plugin socle, déclarée par nom seul (sans plage de versions).
-* Règles de développement, conception et tests du langage, en skills avec paths, une skill par thème (ex. java-conception sur **/*.java, java-tests sur **/src/test/**/*.java, maven sur pom.xml ; **/*.ts, angular.json ; **/*.rs, Cargo.toml).
-* Description de chaque skill précise (langage, thème, fichiers concernés) ; contenu court et actionnable.
+* Règles de développement, conception et tests du langage, un fichier regles/<thème>.md par thème avec en-tête paths (ex. conception sur **/src/main/java/**/*.java, tests sur **/src/test/**/*.java, maven sur **/pom.xml ; **/*.ts, angular.json ; **/*.rs, Cargo.toml), injecté par le hook PreToolUse du plugin ; contenu court et actionnable. outils/verifier-coherence.sh contrôle la présence de l'en-tête.
 * Hook PostToolUse de formatage et d'analyse sur le modèle de formater-et-analyser.sh de suiviProjets, qui sort immédiatement si l'extension du fichier ou le marqueur de stack ne correspond pas.
 * Contraintes de performance du hook PostToolUse : timeout explicite déclaré dans hooks.json, traitement du seul fichier modifié, utilisation exclusive des outils déjà présents dans le projet ou sur le poste (aucune installation), sortie silencieuse si l'outil est absent.
 * Pas de serveur MCP dans les plugins de stack ; un MCP éventuel fera l'objet d'un plugin séparé.
 
 ### Règles communes à tous les hooks
 
+* Aucun hook ne bloque un outil (sortie toujours en code 0, aucune décision de permission).
 * Coupe-circuit : la variable d'environnement CAPIA_DESACTIVER=1 (ou CAPIA_DESACTIVER=<plugin>,<plugin>), hors temoin qui n'écrit rien, fait sortir les hooks concernés immédiatement en code 0, sans modification du dépôt projet.
 * Contrôle du canal actif (voir [Canaux stable et early access](#canaux-stable-et-early-access)).
 * Scripts en fins de ligne LF (.gitattributes) et bit exécutable positionné dans git.
@@ -274,6 +277,6 @@ Chaque phase est relue dans un contexte isolé et validée explicitement avant d
 * Accès en écriture de Claude au dépôt : installer l'application GitHub Claude sur talbotgui/capitalisationIA.
 * Signature des tags de publication.
 * Analyse RGPD du journal des prompts selon la nature des postes.
-* Comportement de paths des skills sur la version épinglée de Claude Code (activation limitée aux fichiers correspondants, coût en contexte) : prototype en début de phase 3.
-* Filtrage par chemin des règles de projet (hook PreToolUse ou PostToolUse injectant du contexte, sans blocage) : à arbitrer si un projet a des règles volumineuses ; l'usage de PreToolUse est à valider au regard de la décision excluant les garde-fous.
-* Mesure pendant le pilote du volume de contexte injecté par session (index projet, skills activées).
+* Mesure pendant le pilote du volume de contexte injecté par session (index projet, règles injectées par motif).
+* Skill redaction-markdown de socle : son champ paths est sans effet ; conversion éventuelle en règle injectée par motif à décider au vu du pilote.
+* Analyse statique Java par fichier dans le hook PostToolUse : aucun outil rapide au fichier près ; l'analyse reste portée par la CI des projets.

@@ -32,7 +32,8 @@ En cours (22/11/2026) : développements terminés sur la branche claude/keen-all
 * Bibliothèque commune copiée dans chaque plugin, avec contrôle d'identité en CI (choix validé par le mainteneur le 22/11/2026).
 * Seul index.md est injecté ; les fichiers thématiques sont listés par chemin absolu et lus par Claude à la demande, pour limiter la taille du contexte.
 * Message « règles du projet chargées » affiché au seul démarrage, pour ne pas répéter l'affichage à chaque compactage.
-* Amendement du plan (22/11/2026) : le filtrage par chemin des .claude/rules n'étant pas disponible pour un plugin, et pour limiter la consommation de tokens, les règles sont organisées en trois niveaux (commun, langage ou stack, projet), les règles de langage relevant de skills avec paths des plugins de stack (voir [Organisation des règles](01_planDeDemarrage.md#organisation-des-règles)). L'index de suiviprojets sera réduit en phase 5.
+* Amendement du plan (22/11/2026) : le filtrage par chemin des .claude/rules n'étant pas disponible pour un plugin, et pour limiter la consommation de tokens, les règles sont organisées en trois niveaux (commun, langage ou stack, projet), les règles de langage relevant des plugins de stack (voir [Organisation des règles](01_planDeDemarrage.md#organisation-des-règles)). L'index de suiviprojets sera réduit en phase 5.
+* Ajout de la phase 3 (26/11/2026) : fichiers de règles du projet à en-tête paths injectés par motif de fichier (hook PreToolUse injecter-regles-fichier.sh), avec le moteur commun ; ils ne sont plus listés au démarrage.
 * suiviProjets possède déjà un CLAUDE.md et des règles versionnées : le contenu injecté en est un résumé et rappelle que la configuration du projet prévaut. Ce projet sert de test de bout en bout, pas de cas d'usage cible.
 
 ## Tests

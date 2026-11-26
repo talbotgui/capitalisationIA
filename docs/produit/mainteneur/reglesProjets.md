@@ -32,6 +32,7 @@ Même circuit que l'ajout, à partir de l'étape 2. Chaque modification de règl
 ## Rédaction des règles
 
 * index.md : court (il est injecté intégralement à chaque session et après chaque compactage) : stack du projet, dérogations aux règles de la stack, spécificités essentielles ; les détails éventuels vont dans les fichiers thématiques.
-* Aucune règle de langage ou de framework : elles sont portées une seule fois par les skills du plugin de stack (voir l'[organisation des règles](../../projet/01_planDeDemarrage.md#organisation-des-règles)).
+* Aucune règle de langage ou de framework : elles sont portées une seule fois par le plugin de stack (voir l'[organisation des règles](../../projet/01_planDeDemarrage.md#organisation-des-règles)).
+* Fichier thématique à injecter seulement quand Claude manipule certains fichiers : en-tête paths en première ligne (même syntaxe que les règles de stack, voir les [conventions](conventions.md#règles-injectées-par-motif-de-fichier)) ; il n'est alors plus listé au démarrage mais injecté à la première lecture ou modification d'un fichier correspondant.
 * Règles actionnables, une par puce, sans renvoi à des documents absents du dépôt du projet.
 * Si le projet possède déjà un CLAUDE.md ou des règles versionnées, l'index le rappelle : la configuration du projet prévaut, les règles de capitalisationIA n'en sont qu'un complément ou un résumé.

@@ -73,12 +73,23 @@ Socle commun, installé avec les autres plugins du canal par /temoin:canal.
 * Hook au démarrage de session : purge des entrées du journal de plus de 90 jours.
 * Skills conventions-commits et redaction-markdown, utilisées par Claude lors d'un commit ou de la rédaction d'un fichier .md ; les règles du projet (CLAUDE.md) prévalent en cas de contradiction.
 * Agent explorateur-code : exploration du code en lecture seule, à demander explicitement (« utilise l'agent explorateur-code pour… ») ou choisi par Claude.
+* Hook après un /clear ou un compactage : remise à zéro des règles déjà transmises dans la session, pour qu'elles le soient de nouveau au besoin.
 
-Le plugin n'écrit rien dans les projets : son seul fichier est le journal des prompts.
+Le plugin n'écrit rien dans les projets : ses seuls fichiers sont le journal des prompts et l'état des règles transmises par session (~/.claude/capitalisation-ia/sessions/, purgé après 7 jours).
 
 ### regles-projets
 
-Règles propres à chaque projet, stockées dans le dépôt capitalisationIA et non dans le projet. Au démarrage de session, après une reprise, un /clear ou un compactage, le plugin reconnaît le projet ouvert à son remote origin et transmet ses règles à Claude ; en ligne de commande, le message « capitalisationIA : règles du projet <projet> chargées. » s'affiche au démarrage. Sur un projet non référencé ou sans remote, il ne fait rien. Il n'écrit aucun fichier. Le CLAUDE.md et les règles versionnées du projet prévalent en cas de contradiction.
+Règles propres à chaque projet, stockées dans le dépôt capitalisationIA et non dans le projet. Au démarrage de session, après une reprise, un /clear ou un compactage, le plugin reconnaît le projet ouvert à son remote origin et transmet ses règles à Claude ; en ligne de commande, le message « capitalisationIA : règles du projet <projet> chargées. » s'affiche au démarrage. Certaines règles du projet ne sont transmises qu'à la première lecture ou modification d'un fichier concerné (par exemple les règles SQL sur les fichiers .sql). Sur un projet non référencé ou sans remote, il ne fait rien. Il n'écrit aucun fichier. Le CLAUDE.md et les règles versionnées du projet prévalent en cas de contradiction.
+
+### stack-java-spring
+
+Règles et formatage de la stack Java et Spring Boot ; nécessite socle, installé avec lui.
+
+* Règles : à la première lecture ou modification, dans une session, d'un fichier concerné, Claude reçoit les règles Java correspondantes : développement et conception (.java), tests (src/test, *Test.java, *IT.java), Maven (pom.xml), Gradle (build.gradle, settings.gradle, libs.versions.toml), configuration Spring (application*.yml, application*.properties). Rien n'est transmis sur un projet d'une autre stack. Les règles du projet prévalent.
+* Formatage : après chaque modification d'un fichier .java d'un projet Maven ou Gradle, le fichier est formaté avec google-java-format s'il est installé sur le poste, sinon avec le plugin Spotless du projet s'il est configuré (hors ligne, wrapper mvnw ou gradlew du projet de préférence). Sans outil disponible, aucun effet. Rien n'est installé ni téléchargé.
+* Coupe-circuit : CAPIA_DESACTIVER=stack-java-spring.
+
+### Demande de règles pour son projet
 
 Pour faire ajouter ou modifier les règles de son projet : ouvrir une issue sur talbotgui/capitalisationIA en indiquant le remote du projet et les règles souhaitées, sans aucune information confidentielle (le dépôt est public), ou proposer directement une PR selon la [documentation mainteneur](mainteneur/reglesProjets.md).
 
@@ -111,5 +122,5 @@ Exemple dans Git Bash : CAPIA_DESACTIVER=socle claude. Signaler ensuite l'incide
 
 Sections prévues par le plan, rédigées au fil des phases :
 
-* plugins de stack (rôle, déclenchement des hooks, fichiers écrits) ;
+* plugins stack-ts-angular et stack-rust ;
 * remontée d'incident.

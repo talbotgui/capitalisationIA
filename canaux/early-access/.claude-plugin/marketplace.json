@@ -36,6 +36,16 @@
         "path": "plugins/regles-projets",
         "ref": "main"
       }
+    },
+    {
+      "name": "stack-java-spring",
+      "description": "Stack Java et Spring Boot : règles injectées à la première manipulation d'un fichier concerné, formatage automatique du fichier Java modifié.",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/talbotgui/capitalisationIA.git",
+        "path": "plugins/stack-java-spring",
+        "ref": "main"
+      }
     }
   ]
 }

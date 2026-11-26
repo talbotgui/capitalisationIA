@@ -7,6 +7,7 @@ Document généré avec l'assistance de l'IA (Claude), à relire et valider.
 * [Organisation du dépôt](#organisation-du-dépôt)
 * [Ajout d'un plugin](#ajout-dun-plugin)
 * [Bibliothèque commune des hooks](#bibliothèque-commune-des-hooks)
+* [Règles injectées par motif de fichier](#règles-injectées-par-motif-de-fichier)
 
 Retour à l'[accueil de la documentation mainteneur](index.md).
 
@@ -38,6 +39,29 @@ plugins/socle/lib/commun.sh, à sourcer par les scripts de hooks. Un plugin qui 
 * capia_normaliser_remote : identifiant hote/proprietaire/depot d'un remote git, en minuscules, sans suffixe .git ni barre finale. Formes acceptées : git@hote:proprietaire/depot.git, ssh://git@hote[:port]/proprietaire/depot.git, https://[identifiants@]hote[:port]/proprietaire/depot(.git). Les identifiants et le port sont supprimés ; toute autre forme (chemin local, plus de deux segments, segment . ou ..) donne un résultat vide.
 * capia_identifiant_projet : remote origin normalisé, sinon sans-remote/<nom du dossier racine>.
 * capia_desactive <plugin> : coupe-circuit CAPIA_DESACTIVER (1, all ou liste de plugins séparés par des virgules).
+* capia_chemin_unix : chemin à séparateurs / (cygpath sous Git Bash), pour comparer les chemins Windows transmis par Claude Code.
+* capia_injecter_regles <plugin> <dossier> [préfixe] : moteur des hooks PreToolUse d'injection de règles (voir [Règles injectées par motif de fichier](#règles-injectées-par-motif-de-fichier)).
 * capia_instance_active <plugin> : faux pour l'instance early access d'un plugin également activé dans le canal stable (seule l'instance stable s'exécute) ; vrai hors installation par un marketplace du dépôt.
 
 Chaque script de hook commence par le coupe-circuit puis le contrôle d'instance, et sort toujours en code 0. Les données locales du marketplace sont écrites sous ~/.claude/capitalisation-ia/ (CLAUDE_CONFIG_DIR si défini), jamais dans le projet.
+
+## Règles injectées par motif de fichier
+
+Les skills de plugin ne permettent pas de charger une règle selon le fichier manipulé (voir l'[organisation des règles](../../projet/01_planDeDemarrage.md#organisation-des-règles)) ; les plugins de stack et regles-projets utilisent donc un hook PreToolUse non bloquant (Read, Edit, MultiEdit, Write) qui appelle capia_injecter_regles.
+
+* Un fichier de règle par thème, dans plugins/<stack>/regles/<thème>.md (ou plugins/regles-projets/projets/<projet>/<thème>.md), commençant par un en-tête paths :
+
+```
+---
+paths:
+  - "**/src/test/**/*.java"
+  - "**/*Test.java"
+---
+* Règle actionnable.
+```
+
+* Forme courte acceptée : paths: "**/pom.xml, **/build.gradle". Motifs relatifs à la racine du projet : ** (dossiers quelconques, y compris aucun), * et ? (hors /), {a,b} (alternative).
+* Seul le corps du fichier (sans l'en-tête) est injecté, une fois par règle et par session ; l'état est écrit sous ~/.claude/capitalisation-ia/sessions/<session>/, remis à zéro par socle après /clear ou compactage et purgé après 7 jours.
+* Contenu court : chaque règle injectée consomme du contexte ; viser une dizaine de puces au plus par fichier.
+* outils/verifier-coherence.sh refuse un fichier regles/*.md sans en-tête paths.
+* Un hook ne bloque jamais un outil : sortie toujours en code 0, sans décision de permission.

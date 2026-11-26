@@ -12,6 +12,7 @@
 #   * chaque entrée stable pointe vers un tag <plugin>--v<version> existant, cohérent avec son champ version ;
 #   * toutes les sources sont des git-subdir vers plugins/<nom> du même dépôt ;
 #   * toute copie de lib/commun.sh dans un plugin est identique à celle de socle ;
+#   * tout fichier regles/*.md d'un plugin porte un en-tête paths non vide ;
 #   * projets/mapping.json de regles-projets : dossiers existants avec index.md, remotes normalisés et uniques.
 
 set -euo pipefail
@@ -69,14 +70,20 @@ for copie in plugins/*/lib/commun.sh; do
   cmp -s "$copie" "$BIBLIOTHEQUE" || signaler "$copie diffère de $BIBLIOTHEQUE (recopier la bibliothèque de socle)."
 done
 
+# Règles injectées par motif de fichier
+# shellcheck source=SCRIPTDIR/../plugins/socle/lib/commun.sh
+. "$BIBLIOTHEQUE"
+for regle in plugins/*/regles/*.md; do
+  [ -e "$regle" ] || continue
+  [ -n "$(capia_motifs_regle "$regle")" ] || signaler "$regle : en-tête paths absent ou vide (la règle ne serait jamais injectée)."
+done
+
 # Mapping des règles projets
 MAPPING="plugins/regles-projets/projets/mapping.json"
 if [ -f "$MAPPING" ]; then
   if ! jq -e '.projets | type == "array"' "$MAPPING" >/dev/null 2>&1; then
     signaler "$MAPPING : JSON invalide ou tableau projets absent."
   else
-    # shellcheck source=SCRIPTDIR/../plugins/socle/lib/commun.sh
-    . "$BIBLIOTHEQUE"
     while IFS=$'\t' read -r dossier remote; do
       case "$dossier" in
         ""|_*|.*|*[!a-z0-9._-]*) signaler "$MAPPING : nom de dossier invalide « $dossier »." ;;

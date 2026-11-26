@@ -124,3 +124,40 @@ sur deux lignes")"
   [ "$status" -eq 0 ]
   [ ! -e "$JOURNAL" ]
 }
+
+@test "moteur de règles : motifs de chemin" {
+  local r
+  r="$(capia_glob_vers_regex '**/*.java')"
+  grep -Eq "$r" <<<"A.java"
+  grep -Eq "$r" <<<"src/main/java/A.java"
+  run ! grep -Eq "$r" <<<"A.javax"
+  r="$(capia_glob_vers_regex 'src/**/*Test.java')"
+  grep -Eq "$r" <<<"src/FooTest.java"
+  run ! grep -Eq "$r" <<<"lib/src/FooTest.java"
+  r="$(capia_glob_vers_regex 'build.gradle{,.kts}')"
+  grep -Eq "$r" <<<"build.gradle.kts"
+  run ! grep -Eq "$r" <<<"build.gradleXkts"
+  r="$(capia_glob_vers_regex '*.md')"
+  grep -Eq "$r" <<<"README.md"
+  run ! grep -Eq "$r" <<<"docs/a.md"
+}
+
+@test "moteur de règles : en-tête paths en chaîne, en liste, ou absent" {
+  printf -- '---\npaths: "a/*.x, **/b.y"\n---\ncorps\n' > "$BATS_TEST_TMPDIR/r1.md"
+  [ "$(capia_motifs_regle "$BATS_TEST_TMPDIR/r1.md" | paste -sd'|')" = 'a/*.x|**/b.y' ]
+  printf -- '---\ndescription: x\npaths:\n  - "**/*.java"\n  - pom.xml\nautre: y\n---\ncorps\n' > "$BATS_TEST_TMPDIR/r2.md"
+  [ "$(capia_motifs_regle "$BATS_TEST_TMPDIR/r2.md" | paste -sd'|')" = '**/*.java|pom.xml' ]
+  [ "$(capia_corps_regle "$BATS_TEST_TMPDIR/r2.md")" = "corps" ]
+  printf '# Sans en-tête\n' > "$BATS_TEST_TMPDIR/r3.md"
+  [ -z "$(capia_motifs_regle "$BATS_TEST_TMPDIR/r3.md")" ]
+}
+
+@test "purge : états de session de plus de 7 jours supprimés" {
+  local s="$CLAUDE_CONFIG_DIR/capitalisation-ia/sessions"
+  mkdir -p "$s/ancienne" "$s/recente"
+  touch -d '-10 days' "$s/ancienne"
+  run bash "$PURGER"
+  [ "$status" -eq 0 ]
+  [ ! -e "$s/ancienne" ]
+  [ -d "$s/recente" ]
+}

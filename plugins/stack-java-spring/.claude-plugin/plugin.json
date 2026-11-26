@@ -1,0 +1,11 @@
+{
+  "name": "stack-java-spring",
+  "description": "Stack Java et Spring Boot : règles de développement, conception, tests et construction injectées à la première manipulation d'un fichier concerné, formatage automatique du fichier Java modifié avec l'outil du projet.",
+  "author": {
+    "name": "talbotgui"
+  },
+  "homepage": "https://github.com/talbotgui/capitalisationIA",
+  "repository": "https://github.com/talbotgui/capitalisationIA",
+  "keywords": ["java", "spring", "capitalisation-ia"],
+  "dependencies": ["socle"]
+}

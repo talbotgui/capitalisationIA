@@ -2,6 +2,10 @@
 
 Document généré avec l'assistance de l'IA (Claude).
 
+## 0.3.1
+
+* /temoin:canal : la bascule de canal respecte les dépendances entre plugins (un plugin requis par un autre n'est désactivé qu'après lui et réactivé avant lui) ; elle échouait dès qu'un plugin de stack était installé.
+
 ## 0.3.0
 
 * Le message de démarrage est aussi transmis à Claude : dans l'extension VS Code, qui ne l'affiche pas, demander « quel canal ? » donne la réponse.

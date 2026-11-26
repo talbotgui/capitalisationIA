@@ -10,6 +10,7 @@ Socle commun du marketplace capitalisationIA, prérequis des autres plugins.
 * Coupe-circuit : CAPIA_DESACTIVER=1 désactive tous les hooks du marketplace, CAPIA_DESACTIVER=socle ceux de ce seul plugin.
 * Skills : conventions-commits (messages de commit, mention d'origine IA), redaction-markdown (règles de rédaction des fichiers .md).
 * Agent explorateur-code : exploration du code en lecture seule, restitution des constats avec références chemin:ligne.
-* Bibliothèque lib/commun.sh : normalisation du remote, identifiant de projet, coupe-circuit, contrôle du canal actif.
+* Bibliothèque lib/commun.sh : normalisation du remote, identifiant de projet, coupe-circuit, contrôle du canal actif, moteur d'injection des règles par motif de fichier (état par session sous ~/.claude/capitalisation-ia/sessions/, purgé après 7 jours).
+* Après un /clear ou un compactage, l'état des règles transmises dans la session est remis à zéro, pour qu'elles soient de nouveau transmises au besoin.
 
 Les conventions des skills s'effacent devant le CLAUDE.md et les règles du projet en cas de contradiction.

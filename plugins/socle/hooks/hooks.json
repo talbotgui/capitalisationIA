@@ -21,6 +21,16 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/scripts/reinitialiser-regles.sh\"",
+            "timeout": 10
+          }
+        ]
       }
     ]
   }

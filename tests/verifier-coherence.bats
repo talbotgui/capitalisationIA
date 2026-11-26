@@ -89,3 +89,10 @@ modifier_json() {
   [[ "$output" == *"non normalisé"* ]]
   [[ "$output" == *"associé à plusieurs projets"* ]]
 }
+
+@test "détecte une règle de stack sans en-tête paths" {
+  printf '# Règle sans en-tête\n' > plugins/stack-java-spring/regles/sans-entete.md
+  run outils/verifier-coherence.sh
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"sans-entete.md : en-tête paths absent"* ]]
+}

@@ -93,3 +93,26 @@ evenement() {
   [ "$status" -eq 0 ]
   [[ "$(jq -r .systemMessage <<<"$output")" == *"suiviprojets"* ]]
 }
+
+@test "règles à motif : injectées à la demande, absentes de la liste du démarrage" {
+  printf -- '---\npaths: "**/*.sql"\n---\nRègle SQL du projet fictif.\n' > "$PLUGIN/projets/fictif/sql.md"
+  git -C "$PROJET" remote add origin git@github.com:exemple/fictif.git
+  run bash "$SCRIPT" <<<"$(evenement startup)"
+  [[ "$output" != *"sql.md"* ]]
+  [[ "$output" == *"tests.md"* ]]
+  jq -n --arg f "$PROJET/schema/v1.sql" '{session_id: "s1", tool_name: "Read", tool_input: {file_path: $f}}' > "$BATS_TEST_TMPDIR/e.json"
+  run bash "$PLUGIN/scripts/injecter-regles-fichier.sh" < "$BATS_TEST_TMPDIR/e.json"
+  [ "$status" -eq 0 ]
+  [[ "$(jq -r .hookSpecificOutput.additionalContext <<<"$output")" == *"Règle SQL du projet fictif."* ]]
+  [[ "$output" == *"fictif/sql"* ]]
+  run bash "$PLUGIN/scripts/injecter-regles-fichier.sh" < "$BATS_TEST_TMPDIR/e.json"
+  [ -z "$output" ]
+}
+
+@test "règles à motif : aucun effet sur un projet inconnu" {
+  printf -- '---\npaths: "**/*.sql"\n---\nRègle SQL.\n' > "$PLUGIN/projets/fictif/sql.md"
+  git -C "$PROJET" remote add origin git@github.com:exemple/autre.git
+  run bash "$PLUGIN/scripts/injecter-regles-fichier.sh" <<<"$(jq -n --arg f "$PROJET/a.sql" '{session_id: "s1", tool_input: {file_path: $f}}')"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
