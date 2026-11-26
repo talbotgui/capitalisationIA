@@ -25,3 +25,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Documentation officielle de Rust
+
+Les règles Rust de ce plugin sont en partie adaptées (traduction, condensation) des Rust API Guidelines (https://github.com/rust-lang/api-guidelines, liste de contrôle) et du livre The Rust Programming Language (https://github.com/rust-lang/book, chapitres 9 et 11), consultés le 26/11/2026, distribués sous licence MIT ou Apache 2.0 au choix : Copyright (c) The Rust Project Developers. La licence MIT reproduite ci-dessus s'applique, avec ce titulaire des droits.
+
+## Documentation officielle de Tauri
+
+Les règles Tauri de ce plugin sont en partie adaptées (traduction, condensation) de la documentation officielle de Tauri 2 (https://v2.tauri.app, sources : https://github.com/tauri-apps/tauri-docs, pages sécurité, appel du code Rust, gestion de l'état, tests), consultée le 26/11/2026, distribuée sous licence MIT : Copyright (c) 2020-2023 Tauri Programme within the Commons Conservancy. La licence MIT reproduite ci-dessus s'applique, avec ce titulaire des droits.

@@ -68,6 +68,8 @@ verifier() {
   verifier stack-rust-tauri src-tauri/tauri.conf.json "tauri-configuration"
   verifier stack-rust-tauri src-tauri/tauri.windows.conf.json "tauri-configuration"
   verifier stack-rust-tauri src-tauri/capabilities/default.json "tauri-configuration"
+  verifier stack-rust-tauri src-tauri/permissions/app.toml "tauri-configuration"
+  verifier stack-rust-tauri src-tauri/build.rs "developpement tauri-configuration tests"
   verifier stack-rust-tauri src/app/a.ts ""
 }
 
