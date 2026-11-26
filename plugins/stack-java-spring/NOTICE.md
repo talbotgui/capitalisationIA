@@ -25,3 +25,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Documentation officielle de Spring Boot et de JUnit
+
+Les règles de ce plugin sont en partie adaptées (traduction, condensation) de la documentation de référence de Spring Boot 4 (https://docs.spring.io/spring-boot/, sources : https://github.com/spring-projects/spring-boot, dossier documentation/spring-boot-docs ; structuration du code, beans et injection de dépendances, classes de configuration, configuration externalisée, accès aux données SQL, MVC, Actuator, tests, Testcontainers), distribuée sous licence Apache 2.0 (Copyright 2012-present the original author or authors), et du guide utilisateur de JUnit (https://docs.junit.org, sources : https://github.com/junit-team/junit5), distribué sous licence Eclipse Public License 2.0. Consultées le 26/11/2026. Les textes ont été modifiés et ne sont pas une reproduction de ces documentations.
+
+Les Secure Coding Guidelines for Java SE d'Oracle n'ont pas pu être consultées (accès refusé depuis l'environnement de développement) ; les règles de sécurité Java reposent sur affaan-m/ecc et la documentation de Spring Boot.

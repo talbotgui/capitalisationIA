@@ -1,10 +1,10 @@
 ---
 paths: "**/*.java"
 ---
-<!-- Fichier généré avec l'assistance de l'IA (Claude), enrichi de affaan-m/ecc (rules/java, licence MIT, voir NOTICE.md). -->
+<!-- Fichier généré avec l'assistance de l'IA (Claude), d'après la documentation officielle de Spring Boot et de JUnit et affaan-m/ecc (rules/java) ; voir NOTICE.md. -->
 
 * Respecter la version de Java déclarée par le projet (maven.compiler.release, toolchain Gradle) ; utiliser ses fonctionnalités modernes quand elles clarifient le code : records pour les données, classes sealed pour les hiérarchies fermées, pattern matching (instanceof, switch exhaustif), switch expressions, text blocks.
-* Conventions Java : PascalCase pour les types, camelCase pour méthodes, champs et variables, MAJUSCULES_SOULIGNEES pour les constantes static final, paquets en minuscules ; la langue des identifiants suit celle du code existant.
+* Conventions de nommage Java : PascalCase pour les types, camelCase pour méthodes, champs et variables, MAJUSCULES_SOULIGNEES pour les constantes static final, paquets en minuscules ; la langue des identifiants suit celle du code existant.
 * Un type public de premier niveau par fichier ; ordre des membres : constantes, champs, constructeurs, méthodes publiques, protégées, privées.
 * Immutabilité par défaut : champs private final, pas de setter inutile, copies défensives dans les API publiques (List.copyOf, Map.copyOf, Set.copyOf), nouvelles instances plutôt que mutation.
 * Optional uniquement en retour d'une recherche pouvant être vide, exploité par map, flatMap, orElseThrow ; jamais get() sans contrôle, jamais en paramètre ni en champ ; jamais de null retourné pour une collection.

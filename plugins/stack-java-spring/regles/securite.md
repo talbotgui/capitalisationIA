@@ -1,7 +1,7 @@
 ---
 paths: "**/src/main/java/**/*.java"
 ---
-<!-- Fichier généré avec l'assistance de l'IA (Claude), enrichi de affaan-m/ecc (rules/java, licence MIT, voir NOTICE.md). -->
+<!-- Fichier généré avec l'assistance de l'IA (Claude), d'après la documentation officielle de Spring Boot et de JUnit et affaan-m/ecc (rules/java) ; voir NOTICE.md. -->
 
 * Aucun secret (clé d'API, jeton, mot de passe) dans le code : variables d'environnement contrôlées au démarrage, gestionnaire de secrets en production.
 * Requêtes SQL toujours paramétrées (PreparedStatement, JdbcTemplate, paramètres JPA) ; jamais de concaténation d'une entrée, y compris en requête native.
