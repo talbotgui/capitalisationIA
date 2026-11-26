@@ -30,4 +30,4 @@ Livrer le plugin stack-java-spring (voir [Plugins de stack](01_planDeDemarrage.m
 
 ## Rapport
 
-À rédiger à la fin de la phase, dans le fichier 01_rapportDeDemarrage_03_stackJavaSpring.md.
+[01_rapportDeDemarrage_03_stackJavaSpring.md](01_rapportDeDemarrage_03_stackJavaSpring.md)
